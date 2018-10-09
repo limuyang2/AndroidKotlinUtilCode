@@ -1,2 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="top.limuyang2.android.ktutilcode" />
+    package="top.limuyang2.android.ktutilcode" >
+
+    <application>
+
+        <provider
+            android:name=".utils.FileProvider4KtUtilCode"
+            android:authorities="${applicationId}.ktutilcode.provider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:multiprocess="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/kt_util_code_provider_paths" />
+        </provider>
+    </application>
+</manifest>

@@ -154,9 +154,14 @@ fun View.subtractMarginTopEqualStatusBarHeight() {
  */
 fun Activity.setStatusBarColor(@ColorInt color: Int,
                                @IntRange(from = 0, to = 255) alpha: Int = 0,
-                               isDecor: Boolean = false) {
+                               isDecor: Boolean = true) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return
     transparentStatusBar()
+
+    if (isDecor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        window.statusBarColor = getStatusBarColor(color, alpha)
+        return
+    }
 
     val parent = if (isDecor)
         window.decorView as ViewGroup
@@ -231,7 +236,6 @@ private fun createColorStatusBarView(context: Context,
 
 fun Activity.transparentStatusBar() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return
-    val window = this.window
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         val option = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN

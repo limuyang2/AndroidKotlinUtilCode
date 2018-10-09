@@ -3,7 +3,9 @@ package top.limuyang2.android.ktutilcode.utils
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.os.Bundle
+import android.support.v4.content.FileProvider
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 
@@ -13,6 +15,11 @@ import java.util.*
  * @date：2018/10/8 9:55
  * @Deprecated
  */
+
+class FileProvider4KtUtilCode : FileProvider() {
+
+
+}
 
 val ACTIVITY_LIFECYCLE = ActivityLifecycleImpl()
 
@@ -29,7 +36,15 @@ private var mApplication: Application? = null
         return field
     }
 
-fun Application.utilsInit() {
+fun Context?.utilsInit() {
+    if (this == null) {
+        getApplicationByReflect().utilsInit()
+        return
+    }
+    (this.applicationContext as Application).utilsInit()
+}
+
+fun Application?.utilsInit() {
     mApplication = this
 }
 
