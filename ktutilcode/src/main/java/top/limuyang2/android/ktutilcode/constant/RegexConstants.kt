@@ -12,7 +12,8 @@ package top.limuyang2.android.ktutilcode.constant
 /**
  * Regex of simple mobile.
  */
-val REGEX_MOBILE_SIMPLE = "^[1]\\d{10}$"
+const val REGEX_MOBILE_SIMPLE = "^[1]\\d{10}$"
+
 /**
  * Regex of exact mobile.
  *
@@ -26,7 +27,7 @@ val REGEX_MOBILE_SIMPLE = "^[1]\\d{10}$"
  *
  * virtual operator: 170
  */
-val REGEX_MOBILE_EXACT = "^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(16[6])|(17[0,1,3,5-8])|(18[0-9])|(19[8,9]))\\d{8}$"
+const val REGEX_MOBILE_EXACT = "^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(16[6])|(17[0,1,3,5-8])|(18[0-9])|(19[8,9]))\\d{8}$"
 /**
  * Regex of telephone number.
  */
@@ -42,15 +43,15 @@ val REGEX_ID_CARD18 = "^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0
 /**
  * Regex of email.
  */
-val REGEX_EMAIL = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$"
+const val REGEX_EMAIL = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$"
 /**
  * Regex of url.
  */
-val REGEX_URL = "[a-zA-z]+://[^\\s]*"
+const val REGEX_URL = "[a-zA-z]+://[^\\s]*"
 /**
  * Regex of Chinese character.
  */
-val REGEX_ZH = "^[\\u4e00-\\u9fa5]+$"
+const val REGEX_ZH = "^[\\u4e00-\\u9fa5]+$"
 /**
  * Regex of username.
  *

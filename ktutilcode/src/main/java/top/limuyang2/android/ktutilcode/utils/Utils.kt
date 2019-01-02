@@ -16,11 +16,6 @@ import java.util.*
  * @Deprecated
  */
 
-class FileProvider4KtUtilCode : FileProvider() {
-
-
-}
-
 val ACTIVITY_LIFECYCLE = ActivityLifecycleImpl()
 
 

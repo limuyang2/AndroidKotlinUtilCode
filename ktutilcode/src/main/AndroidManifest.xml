@@ -4,7 +4,7 @@
     <application>
 
         <provider
-            android:name=".utils.FileProvider4KtUtilCode"
+            android:name=".FileProvider4KtUtilCode"
             android:authorities="${applicationId}.ktutilcode.provider"
             android:exported="false"
             android:grantUriPermissions="true"

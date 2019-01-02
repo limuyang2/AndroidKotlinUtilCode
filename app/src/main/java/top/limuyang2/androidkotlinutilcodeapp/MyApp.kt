@@ -1,6 +1,7 @@
 package top.limuyang2.androidkotlinutilcodeapp
 
 import android.app.Application
+import top.limuyang2.android.ktutilcode.KtUtilsCode
 
 /**
  * @name：MyApp
@@ -13,5 +14,6 @@ class MyApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        KtUtilsCode.init(this)
     }
 }
