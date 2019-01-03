@@ -1,4 +1,4 @@
-package top.limuyang2.android.ktutilcode.utils
+package top.limuyang2.android.ktutilcode.core
 
 import android.annotation.TargetApi
 import android.app.Activity
@@ -11,12 +11,11 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 
-
 /**
  * Show the soft input.
  */
 fun Activity.showSoftInput() {
-    val imm = app().getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
+    val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
     var view = currentFocus
     if (view == null) {
         view = View(this)
@@ -31,29 +30,18 @@ fun Activity.showSoftInput() {
  * Show the soft input.
  */
 fun View.showSoftInput() {
-    val imm = app().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     isFocusable = true
     isFocusableInTouchMode = true
     requestFocus()
-
     imm.showSoftInput(this, InputMethodManager.SHOW_FORCED)
-}
-
-/**
- * Show the soft input using toggle.
- */
-fun Activity.showSoftInputUsingToggle() {
-    if (isSoftInputVisible()) return
-    val imm = app().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    //noinspection ConstantConditions
-    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
 }
 
 /**
  * Hide the soft input.
  */
 fun Activity.hideSoftInput() {
-    val imm = app().getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
+    val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
     var view = currentFocus
     if (view == null) view = View(this)
     imm.hideSoftInputFromWindow(view.windowToken, 0)
@@ -63,37 +51,22 @@ fun Activity.hideSoftInput() {
  * Hide the soft input.
  */
 fun View.hideSoftInput() {
-    val imm = app().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(windowToken, 0)
-}
-
-/**
- * Hide the soft input.
- */
-fun Activity.hideSoftInputUsingToggle() {
-    if (!isSoftInputVisible()) return
-    toggleSoftInput()
 }
 
 /**
  * Toggle the soft input display or not.
  */
-fun toggleSoftInput() {
-    val imm = app().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
+fun Activity.toggleSoftInput() {
+    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
 }
 
-/**
- * Return whether soft input is visible.
- *
- * @return `true`: yes<br></br>`false`: no
- */
-fun Activity.isSoftInputVisible(): Boolean {
-    return getDecorViewInvisibleHeight() > 0
-}
 
+///////////////////////////////////////////
+//      键盘弹出监听 相关(实验性质)
+///////////////////////////////////////////
 private var sDecorViewDelta = 0
 
 private fun Activity.getDecorViewInvisibleHeight(): Int {
@@ -101,20 +74,18 @@ private fun Activity.getDecorViewInvisibleHeight(): Int {
     val outRect = Rect()
     decorView.getWindowVisibleDisplayFrame(outRect)
     val delta = Math.abs(decorView.bottom - outRect.bottom)
-    if (delta <= getNavBarHeight()) {
+    if (delta <= navBarHeight) {
         sDecorViewDelta = delta
         return 0
     }
     return delta - sDecorViewDelta
 }
 
-
 private var onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
 private var sDecorViewInvisibleHeightPre: Int = 0
 private var onSoftInputChangedListener: OnSoftInputChangedListener? = null
-private var sContentViewInvisibleHeightPre5497: Int = 0
 
-typealias OnSoftInputChangedListener = (height: Int) -> Unit
+private typealias OnSoftInputChangedListener = (height: Int) -> Unit
 
 /**
  * Register soft input changed listener.

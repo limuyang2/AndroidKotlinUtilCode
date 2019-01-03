@@ -1,4 +1,4 @@
-package top.limuyang2.android.ktutilcode.utils
+package top.limuyang2.android.ktutilcode.core
 
 import android.content.ContentResolver
 import android.content.CursorLoader
@@ -7,17 +7,8 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.support.v4.content.FileProvider
-
+import top.limuyang2.android.ktutilcode.KtUtilsCode
 import java.io.File
-
-/**
- * <pre>
- * author: Blankj
- * blog  : http://blankj.com
- * time  : 2018/04/20
- * desc  : URI 相关
-</pre> *
- */
 
 /**
  * File to uri.
@@ -26,8 +17,8 @@ import java.io.File
  */
 fun File.toUri(): Uri {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        val authority = app().packageName + ".ktutilcode.provider"
-        FileProvider.getUriForFile(app(), authority, this)
+        val authority = KtUtilsCode.app.packageName + ".ktutilcode.provider"
+        FileProvider.getUriForFile(KtUtilsCode.app, authority, this)
     } else {
         Uri.fromFile(this)
     }
@@ -43,9 +34,9 @@ fun File.toUri(): Uri {
  */
 fun Uri.toFile(columnName: String): File {
     if (ContentResolver.SCHEME_FILE == this.scheme) {
-        return File(this.path!!)
+        return File(this.path ?: "")
     }
-    val cl = CursorLoader(app())
+    val cl = CursorLoader(KtUtilsCode.app)
     cl.uri = this
     cl.projection = arrayOf(columnName)
     var cursor: Cursor? = null

@@ -48,5 +48,5 @@ inline val CharSequence?.isIP: Boolean
  * @return `true`: yes<br></br>`false`: no
  */
 fun CharSequence?.isMatch(regex: String): Boolean {
-    return this != null && this.isNotEmpty() && Regex(regex).matches(this)
+    return !this.isNullOrEmpty() && Regex(regex).matches(this)
 }

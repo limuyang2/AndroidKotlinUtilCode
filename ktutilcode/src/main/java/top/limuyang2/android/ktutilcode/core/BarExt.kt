@@ -1,4 +1,4 @@
-package top.limuyang2.android.ktutilcode.utils
+package top.limuyang2.android.ktutilcode.core
 
 import android.app.Activity
 import android.content.Context
@@ -12,104 +12,90 @@ import android.util.TypedValue
 import android.view.*
 import android.widget.LinearLayout
 
-/**
- * @name：BarUtils
- * @author lmy
- * @date：2018/10/8 16:21
- * @Deprecated
- */
-
-///////////////////////////////////////////////////////////////////////////
-// status bar
-///////////////////////////////////////////////////////////////////////////
-
 
 private const val TAG_COLOR = "TAG_COLOR"
-private const val TAG_OFFSET = "TAG_OFFSET"
+const val TAG_OFFSET = "TAG_OFFSET"
 private const val KEY_OFFSET = -123
 
-
 /**
- * Return the status bar's height.
- *
- * @return the status bar's height
+ * 获取状态栏的高度
  */
-fun Context.getStatusBarHeight(): Int {
-    val resources = this.resources
-    val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
-    return resources.getDimensionPixelSize(resourceId)
-}
-
-/**
- * Set the status bar's visibility.
- *
- * @param isVisible True to set status bar visible, false otherwise.
- */
-fun Activity.setStatusBarVisibility(isVisible: Boolean) {
-    window.setStatusBarVisibility(isVisible)
-}
-
-/**
- * Set the status bar's visibility.
- *
- * @param isVisible True to set status bar visible, false otherwise.
- */
-fun Window.setStatusBarVisibility(isVisible: Boolean) {
-    if (isVisible) {
-        clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        showColorView(this)
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return
-        val withTag = decorView.findViewWithTag<View>(TAG_OFFSET) ?: return
-        withTag.addMarginTopEqualStatusBarHeight()
-    } else {
-        this.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        hideColorView(this)
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return
-        val withTag = decorView.findViewWithTag<View>(TAG_OFFSET) ?: return
-        withTag.subtractMarginTopEqualStatusBarHeight()
+inline val Context.statusBarHeight: Int
+    get() {
+        var result = 0
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        if (resourceId > 0) {
+            result = resources.getDimensionPixelSize(resourceId)
+        }
+        return result
     }
-}
 
 /**
- * Return whether the status bar is visible.
- *
- * @return `true`: yes<br></br>`false`: no
+ * status bar visible attribute.
  */
-fun Activity.isStatusBarVisible(): Boolean {
-    val flags = window.attributes.flags
-    return flags and WindowManager.LayoutParams.FLAG_FULLSCREEN == 0
-}
+inline var Activity.statusBarVisible: Boolean
+    set(value) {
+        this.window.statusBarVisible = value
+    }
+    get() = this.window.statusBarVisible
 
-/**
- * Set the status bar's light mode.
- *
- * @param isLightMode True to set status bar light mode, false otherwise.
- */
-fun Activity.setStatusBarLightMode(isLightMode: Boolean) {
-    window.setStatusBarLightMode(isLightMode)
-}
+inline var Window.statusBarVisible: Boolean
+    set(value) {
+        if (value) {
+            clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            showColorView()
 
-/**
- * Set the status bar's light mode.
- *
- * @param isLightMode True to set status bar light mode, false otherwise.
- */
-fun Window.setStatusBarLightMode(isLightMode: Boolean) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        if (decorView != null) {
-            var vis = decorView.systemUiVisibility
-            vis = if (isLightMode) {
-                this.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                vis or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            } else {
-                vis and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-            }
-            decorView.systemUiVisibility = vis
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return
+            val withTag = decorView.findViewWithTag<View>(TAG_OFFSET) ?: return
+            withTag.addMarginTopEqualStatusBarHeight()
+        } else {
+            this.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            hideColorView()
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return
+            val withTag = decorView.findViewWithTag<View>(TAG_OFFSET) ?: return
+            withTag.subtractMarginTopEqualStatusBarHeight()
         }
     }
-}
+    get() {
+        val flags = attributes.flags
+        return flags and WindowManager.LayoutParams.FLAG_FULLSCREEN == 0
+    }
+
+/**
+ * Set the status bar's light mode.
+ *
+ */
+inline var Activity.statusBarLightMode: Boolean
+    set(value) {
+        window.statusBarLightMode = value
+    }
+    get() = window.statusBarLightMode
+
+inline var Window.statusBarLightMode: Boolean
+    set(value) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (decorView != null) {
+                var vis = decorView.systemUiVisibility
+                vis = if (value) {
+                    this.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                    vis or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                } else {
+                    vis and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+                }
+                decorView.systemUiVisibility = vis
+            }
+        }
+    }
+    get() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (decorView != null) {
+                val vis = decorView.systemUiVisibility
+                return vis == vis or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            }
+        }
+        return false
+    }
 
 /**
  * Add the top margin size equals status bar's height for view.
@@ -117,12 +103,12 @@ fun Window.setStatusBarLightMode(isLightMode: Boolean) {
  */
 fun View.addMarginTopEqualStatusBarHeight() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return
-    tag = TAG_OFFSET
+    this.tag = TAG_OFFSET
     val haveSetOffset = getTag(KEY_OFFSET)
     if (haveSetOffset != null && haveSetOffset as Boolean) return
     val layoutParams = layoutParams as ViewGroup.MarginLayoutParams
     layoutParams.setMargins(layoutParams.leftMargin,
-            layoutParams.topMargin + context.getStatusBarHeight(),
+            layoutParams.topMargin + context.statusBarHeight,
             layoutParams.rightMargin,
             layoutParams.bottomMargin)
     setTag(KEY_OFFSET, true)
@@ -138,7 +124,7 @@ fun View.subtractMarginTopEqualStatusBarHeight() {
     if (haveSetOffset == null || !(haveSetOffset as Boolean)) return
     val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
     layoutParams.setMargins(layoutParams.leftMargin,
-            layoutParams.topMargin - context.getStatusBarHeight(),
+            layoutParams.topMargin - context.statusBarHeight,
             layoutParams.rightMargin,
             layoutParams.bottomMargin)
     this.setTag(KEY_OFFSET, false)
@@ -158,10 +144,10 @@ fun Activity.setStatusBarColor(@ColorInt color: Int,
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return
     transparentStatusBar()
 
-    if (isDecor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        window.statusBarColor = getStatusBarColor(color, alpha)
-        return
-    }
+//    if (isDecor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//        window.statusBarColor = getStatusBarColor(color, alpha)
+//        return
+//    }
 
     val parent = if (isDecor)
         window.decorView as ViewGroup
@@ -187,24 +173,24 @@ fun Activity.setStatusBarColor(@ColorInt color: Int,
 fun View.setStatusBarColor(@ColorInt color: Int,
                            @IntRange(from = 0, to = 255) alpha: Int = 0) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return
-    visibility = View.VISIBLE
+    this.visibility = View.VISIBLE
     (context as Activity).transparentStatusBar()
     val layoutParams = layoutParams
     layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
-    layoutParams.height = context.getStatusBarHeight()
+    layoutParams.height = context.statusBarHeight
     setBackgroundColor(getStatusBarColor(color, alpha))
 }
 
 
-private fun hideColorView(window: Window) {
-    val decorView = window.decorView as ViewGroup
+fun Window.hideColorView() {
+    val decorView = decorView as ViewGroup
     val fakeStatusBarView = decorView.findViewWithTag<View>(TAG_COLOR) ?: return
     fakeStatusBarView.visibility = View.GONE
 }
 
 
-private fun showColorView(window: Window) {
-    val decorView = window.decorView as ViewGroup
+fun Window.showColorView() {
+    val decorView = decorView as ViewGroup
     val fakeStatusBarView = decorView.findViewWithTag<View>(TAG_COLOR) ?: return
     fakeStatusBarView.visibility = View.VISIBLE
 }
@@ -227,7 +213,7 @@ private fun createColorStatusBarView(context: Context,
                                      alpha: Int): View {
     val statusBarView = View(context)
     statusBarView.layoutParams = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, context.getStatusBarHeight())
+            ViewGroup.LayoutParams.MATCH_PARENT, context.statusBarHeight)
     statusBarView.setBackgroundColor(getStatusBarColor(color, alpha))
     statusBarView.tag = TAG_COLOR
     return statusBarView
@@ -255,14 +241,15 @@ fun Activity.transparentStatusBar() {
  *
  * @return the action bar's height
  */
-fun Activity.getActionBarHeight(): Int {
-    val tv = TypedValue()
-    return if (this.theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-        TypedValue.complexToDimensionPixelSize(
-                tv.data, this.resources.displayMetrics
-        )
-    } else 0
-}
+inline val Activity.actionBarHeight: Int
+    get() {
+        val tv = TypedValue()
+        return if (this.theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            TypedValue.complexToDimensionPixelSize(
+                    tv.data, this.resources.displayMetrics
+            )
+        } else 0
+    }
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -274,98 +261,66 @@ fun Activity.getActionBarHeight(): Int {
  *
  * @return the navigation bar's height
  */
-fun Context.getNavBarHeight(): Int {
-    val res = this.resources
-    val resourceId = res.getIdentifier("navigation_bar_height", "dimen", "android")
-    return if (resourceId != 0) {
-        res.getDimensionPixelSize(resourceId)
-    } else {
-        0
+inline val Context.navBarHeight: Int
+    get() {
+        val res = this.resources
+        val resourceId = res.getIdentifier("navigation_bar_height", "dimen", "android")
+        return if (resourceId != 0) {
+            res.getDimensionPixelSize(resourceId)
+        } else {
+            0
+        }
     }
-}
+
 
 /**
  * Set the navigation bar's visibility.
  *
- * @param isVisible True to set navigation bar visible, false otherwise.
  */
-@RequiresApi(api = Build.VERSION_CODES.KITKAT)
-fun Activity.setNavBarVisibility(isVisible: Boolean) {
-    window.setNavBarVisibility(isVisible)
-}
-
-/**
- * Set the navigation bar's visibility.
- *
- * @param isVisible True to set navigation bar visible, false otherwise.
- */
-@RequiresApi(Build.VERSION_CODES.KITKAT)
-fun Window.setNavBarVisibility(isVisible: Boolean) {
-    val uiOptions = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-    if (isVisible) {
-        decorView.systemUiVisibility = decorView.systemUiVisibility and uiOptions.inv()
-    } else {
-        decorView.systemUiVisibility = decorView.systemUiVisibility or uiOptions
+inline var Activity.navBarVisible: Boolean
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    set(value) {
+        window.navBarVisible = value
     }
-}
+    get() = window.navBarVisible
 
-/**
- * Return whether the navigation bar visible.
- *
- * @return `true`: yes<br></br>`false`: no
- */
-fun Activity.isNavBarVisible(): Boolean {
-    return window.isNavBarVisible()
-}
 
-/**
- * Return whether the navigation bar visible.
- *
- * @return `true`: yes<br></br>`false`: no
- */
-fun Window.isNavBarVisible(): Boolean {
-    val visibility = decorView.systemUiVisibility
-    return visibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION == 0
-}
-
-/**
- * Set the navigation bar's color.
- *
- * @param color    The navigation bar's color.
- */
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-fun Activity.setNavBarColor(@ColorInt color: Int) {
-    window.setNavBarColor(color)
-}
+inline var Window.navBarVisible: Boolean
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    set(value) {
+        val uiOptions = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        if (value) {
+            decorView.systemUiVisibility = decorView.systemUiVisibility and uiOptions.inv()
+        } else {
+            decorView.systemUiVisibility = decorView.systemUiVisibility or uiOptions
+        }
+    }
+    get() {
+        val visibility = decorView.systemUiVisibility
+        return visibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION == 0
+    }
 
 /**
  * Set the navigation bar's color.
  *
- * @param color  The navigation bar's color.
  */
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-fun Window.setNavBarColor(@ColorInt color: Int) {
-    navigationBarColor = color
-}
+inline var Activity.navBarColor: Int
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    set(value) {
+        window.navBarColor = value
+    }
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    get() = window.navBarColor
 
-/**
- * Return the color of navigation bar.
- *
- * @return the color of navigation bar
- */
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-fun Activity.getNavBarColor(): Int = window.getNavBarColor()
-
-/**
- * Return the color of navigation bar.
- *
- * @return the color of navigation bar
- */
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-fun Window.getNavBarColor(): Int = navigationBarColor
-
+inline var Window.navBarColor: Int
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    set(value) {
+        navigationBarColor = value
+    }
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    get() = navigationBarColor
 
 /**
  * Return whether the navigation bar visible.
@@ -383,7 +338,7 @@ fun Context.isSupportNavBar(): Boolean {
         display.getRealSize(realSize)
         return realSize.y != size.y || realSize.x != size.x
     }
-    val menu = ViewConfiguration.get(app()).hasPermanentMenuKey()
+    val menu = ViewConfiguration.get(this).hasPermanentMenuKey()
     val back = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK)
     return !menu && !back
 }

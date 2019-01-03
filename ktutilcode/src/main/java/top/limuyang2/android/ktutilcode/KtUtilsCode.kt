@@ -6,16 +6,16 @@ import java.lang.reflect.InvocationTargetException
 
 object KtUtilsCode {
 
-    private lateinit var application: Application
+    private lateinit var mApplication: Application
 
     fun init(application: Application) {
-        this.application = application
+        this.mApplication = application
     }
 
     val app: Application
         get() {
-            return if (::application.isInitialized) {
-                application
+            return if (::mApplication.isInitialized) {
+                mApplication
             } else {
                 getApplicationByReflect()
             }
