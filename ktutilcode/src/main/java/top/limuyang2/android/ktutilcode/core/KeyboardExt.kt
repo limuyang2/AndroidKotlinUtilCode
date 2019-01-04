@@ -30,7 +30,7 @@ fun Activity.showSoftInput() {
  * Show the soft input.
  */
 fun View.showSoftInput() {
-    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
     isFocusable = true
     isFocusableInTouchMode = true
     requestFocus()
@@ -51,7 +51,7 @@ fun Activity.hideSoftInput() {
  * Hide the soft input.
  */
 fun View.hideSoftInput() {
-    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
     imm.hideSoftInputFromWindow(windowToken, 0)
 }
 
@@ -59,7 +59,7 @@ fun View.hideSoftInput() {
  * Toggle the soft input display or not.
  */
 fun Activity.toggleSoftInput() {
-    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
     imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
 }
 

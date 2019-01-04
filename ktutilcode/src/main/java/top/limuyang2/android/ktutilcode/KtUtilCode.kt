@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import java.lang.reflect.InvocationTargetException
 
-object KtUtilsCode {
+object KtUtilCode {
 
     private lateinit var mApplication: Application
 

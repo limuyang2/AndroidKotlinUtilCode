@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.alibaba.fastjson.JSON
 import com.google.gson.Gson
+import top.limuyang2.android.ktutilcode.core.edit
+import top.limuyang2.android.ktutilcode.core.getSP
+import top.limuyang2.android.ktutilcode.core.read
 import top.limuyang2.android.ktutilcode.core.setStatusBarColor
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
-
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -17,7 +18,21 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        setStatusBarColor(resources.getColor(R.color.colorPrimary),100)
+        setStatusBarColor(resources.getColor(R.color.colorPrimary), 100)
+
+        getSP().edit {
+            putBoolean("test" , true)
+
+        }
+        var c = false
+        getSP().read {
+            c = getBoolean("test", false)
+            println("---------->>>  &$c")
+        }
+
+//        getSP().apply {
+//            c = getBoolean("test", false)
+//        }
 
 //        val newstringBuilder = StringBuilder()
 //        var inputStream: InputStream? = null
@@ -53,11 +68,11 @@ class MainActivity : AppCompatActivity() {
 //        println("-------->fast ${group.data!!}")
     }
 
-    inline fun <reified T> fJson(jsonStr:String): T {
-       return Gson().fromJson(jsonStr, T::class.java)
+    inline fun <reified T> fJson(jsonStr: String): T {
+        return Gson().fromJson(jsonStr, T::class.java)
     }
 
-    inline fun <reified T> fJson2(jsonStr:String): T {
+    inline fun <reified T> fJson2(jsonStr: String): T {
         return JSON.parseObject(jsonStr, T::class.java)
     }
 
