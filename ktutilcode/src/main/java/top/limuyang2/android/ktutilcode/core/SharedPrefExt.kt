@@ -9,7 +9,6 @@ import android.content.SharedPreferences
  * @receiver Context
  * @param spName String
  * @param mode Int
- * @return (android.content.SharedPreferences..android.content.SharedPreferences?)
  */
 fun Context.getSP(spName: String = "shared_preferences", mode: Int = Context.MODE_PRIVATE): SharedPreferences =
         getSharedPreferences(spName, mode)
