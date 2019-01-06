@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.support.annotation.ColorInt
 import top.limuyang2.android.ktutilcode.KtUtilCode
-import java.io.IOException
 
 @Suppress("DEPRECATION")
 @ColorInt
@@ -35,10 +34,7 @@ fun Int.toDrawable(): Drawable {
 }
 
 fun Context.readAssetsFile(fileName: String): String {
-    return try {
-        this.assets.open(fileName).reader().readText()
-    } catch (e: IOException) {
-        e.printStackTrace()
-        ""
+    this.assets.open(fileName).use {
+        return it.reader().readText()
     }
 }
