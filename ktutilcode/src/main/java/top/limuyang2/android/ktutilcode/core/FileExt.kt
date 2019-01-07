@@ -2,6 +2,7 @@ package top.limuyang2.android.ktutilcode.core
 
 import java.io.*
 
+typealias ExtFileFilter = (file: File) -> Boolean
 
 /**
  * 路径字符串转为File
@@ -99,8 +100,11 @@ fun File?.deleteDir(): Boolean {
     val files = this.listFiles()
     if (!files.isNullOrEmpty()) {
         for (file in files) {
-            if (!file.delete)
-                return false
+            if (file.isFile) {
+                if (!file.delete()) return false
+            } else if (file.isDirectory) {
+                if (!file.deleteDir()) return false
+            }
         }
     }
     return this.delete()
@@ -117,15 +121,13 @@ inline val File?.delete: Boolean
         } else this.deleteFile()
     }
 
-typealias Filter = (file: File) -> Boolean
-
 /**
  * 删除目录下所有东西（除去过滤的文件）
  *
- * @param filter  过滤的文件
- * @return `true`: success<br></br>`false`: fail
+ * @param extFileFilter  过滤的文件
+ * @return Boolean `true`: success, `false`: fail
  */
-fun File?.deleteAllInDir(filter: Filter? = null): Boolean {
+fun File?.deleteAllInDir(extFileFilter: ExtFileFilter? = null): Boolean {
     if (this == null) return false
     // dir doesn't exist then return true
     if (!this.exists()) return true
@@ -134,11 +136,9 @@ fun File?.deleteAllInDir(filter: Filter? = null): Boolean {
     val files = this.listFiles()
     if (files != null && files.isNotEmpty()) {
         for (file in files) {
-            filter?.let {
-                if (it.invoke(this)) {
-                    if (!file.delete)
-                        return false
-                }
+            if (extFileFilter == null || extFileFilter.invoke(this)) {
+                if (!file.delete)
+                    return false
             }
         }
     }
@@ -150,20 +150,20 @@ fun File?.deleteAllInDir(filter: Filter? = null): Boolean {
  * @receiver File?
  * @param toFile 目标文件
  * @param isMove Boolean
- * @param replaceFilter 文件过滤器。当目标文件存在时，是否进行替换，'true'替换; 'false' 不替换
+ * @param replaceExtFileFilter 文件过滤器。当目标文件存在时，是否进行替换，'true'替换; 'false' 不替换
  * @return Boolean
  */
 private fun File?.copyOrMoveFile(
         toFile: File,
         isMove: Boolean,
-        replaceFilter: Filter? = null): Boolean {
+        replaceExtFileFilter: ExtFileFilter? = null): Boolean {
     if (this == null) return false
     // srcFile equals destFile then return false
     if (this == toFile) return false
     // srcFile doesn't exist or isn't a file then return false
     if (!this.exists() || !this.isFile) return false
     if (toFile.exists()) {
-        if (replaceFilter == null || replaceFilter.invoke(toFile)) {// require delete the old file
+        if (replaceExtFileFilter == null || replaceExtFileFilter.invoke(toFile)) {// require delete the old file
             if (!toFile.delete()) {// unsuccessfully delete then return false
                 return false
             }
@@ -185,13 +185,13 @@ private fun File?.copyOrMoveFile(
  * 复制 或 移动此文件夹 到 目标文件夹
  * @param toDir 需要复制到的目标文件夹
  * @param isMove Boolean
- * @param replaceFilter 文件夹过滤器。当目标文件夹存在时，是否进行替换，'true'替换; 'false' 不替换
+ * @param replaceExtFileFilter 文件夹过滤器。当目标文件夹存在时，是否进行替换，'true'替换; 'false' 不替换
  * @return Boolean
  */
 private fun File?.copyOrMoveDir(
         toDir: File,
         isMove: Boolean,
-        replaceFilter: Filter? = null): Boolean {
+        replaceExtFileFilter: ExtFileFilter? = null): Boolean {
     if (this == null) return false
     // destDir's path locate in srcDir's path then return false
     val srcPath = this.path + File.separator
@@ -199,7 +199,7 @@ private fun File?.copyOrMoveDir(
     if (destPath.contains(srcPath)) return false
     if (!this.exists() || !this.isDirectory) return false
     if (toDir.exists()) {
-        if (replaceFilter == null || replaceFilter.invoke(toDir)) {// require delete the old directory
+        if (replaceExtFileFilter == null || replaceExtFileFilter.invoke(toDir)) {// require delete the old directory
             if (!toDir.deleteAllInDir()) {// unsuccessfully delete then return false
                 return false
             }
@@ -212,9 +212,9 @@ private fun File?.copyOrMoveDir(
     for (file in files) {
         val oneDestFile = File(destPath + file.name)
         if (file.isFile) {
-            if (!copyOrMoveFile(oneDestFile, isMove, replaceFilter)) return false
+            if (!copyOrMoveFile(oneDestFile, isMove, replaceExtFileFilter)) return false
         } else if (file.isDirectory) {
-            if (!copyOrMoveDir(oneDestFile, isMove, replaceFilter)) return false
+            if (!copyOrMoveDir(oneDestFile, isMove, replaceExtFileFilter)) return false
         }
     }
     return !isMove || this.deleteDir()
@@ -224,11 +224,11 @@ private fun File?.copyOrMoveDir(
  * 复制文件夹（需要使用文件夹过滤器的情况下）
  * @receiver File? 原文件夹
  * @param toDir 目标文件夹
- * @param replaceFilter 过滤器。当目标文件夹存在时，是否进行替换，'true'替换; 'false' 不替换
+ * @param replaceExtFileFilter 过滤器。当目标文件夹存在时，是否进行替换，'true'替换; 'false' 不替换
  * @return Boolean
  */
-fun File?.copyDirTo(toDir: File, replaceFilter: Filter? = null): Boolean {
-    return copyOrMoveDir(toDir, false, replaceFilter)
+fun File?.copyDirTo(toDir: File, replaceExtFileFilter: ExtFileFilter? = null): Boolean {
+    return copyOrMoveDir(toDir, false, replaceExtFileFilter)
 }
 
 /**
