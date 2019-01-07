@@ -134,7 +134,7 @@ fun File?.deleteAllInDir(extFileFilter: ExtFileFilter? = null): Boolean {
     // dir isn't a directory then return false
     if (!this.isDirectory) return false
     val files = this.listFiles()
-    if (files != null && files.isNotEmpty()) {
+    if (!files.isNullOrEmpty()) {
         for (file in files) {
             if (extFileFilter == null || extFileFilter.invoke(this)) {
                 if (!file.delete)
