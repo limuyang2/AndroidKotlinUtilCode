@@ -2,6 +2,7 @@ package top.limuyang2.androidkotlinutilcodeapp
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.widget.EditText
 import com.alibaba.fastjson.JSON
 import com.google.gson.Gson
 import top.limuyang2.android.ktutilcode.core.*
@@ -18,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         setStatusBarColor(resources.getColor(R.color.colorPrimary), 100)
 
         getSP().edit {
-            putBoolean("test" , true)
+            putBoolean("test", true)
 
         }
         var c = false
@@ -30,11 +31,12 @@ class MainActivity : AppCompatActivity() {
         val path = "/sdcard/jeejen/ttt2.txt".toFile()
 
 
-
         val path2 = "/sdcard/ttt.txt".toFile()
-        println("path2.createFile()  --->  "  +  path2.createFile())
+        println("path2.createFile()  --->  " + path2.createFile())
         path2.rename("rrr.txt")
-        
+
+        val et = EditText(this)
+
 
 //        getSP().apply {
 //            c = getBoolean("test", false)
