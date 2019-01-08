@@ -9,8 +9,8 @@ typealias ExtFileFilter = (file: File) -> Boolean
  * @receiver String?
  * @return File?
  */
-fun String?.toFile(): File? {
-    return if (this.isNullOrEmpty()) null else File(this)
+fun String.toFile(): File {
+    return File(this)
 }
 
 /**
@@ -25,8 +25,8 @@ fun File?.isFileExists(): Boolean {
 /**
  * 重命名文件
  *
- * @param newName The new name of file.
- * @return `true`: success<br></br>`false`: fail
+ * @param newName 新文件名
+ * @return
  */
 fun File?.rename(newName: String): Boolean {
     // file is null and doesn't exist then return false
@@ -112,6 +112,7 @@ fun File?.deleteDir(): Boolean {
 
 /**
  * 删除文件 或 目录
+ * 与系统的 delete() 不同，系统的目录删除方法，该目录必须为空才能被删除。
  */
 inline val File?.delete: Boolean
     get() {
@@ -212,9 +213,9 @@ private fun File?.copyOrMoveDir(
     for (file in files) {
         val oneDestFile = File(destPath + file.name)
         if (file.isFile) {
-            if (!copyOrMoveFile(oneDestFile, isMove, replaceExtFileFilter)) return false
+            if (!file.copyOrMoveFile(oneDestFile, isMove, replaceExtFileFilter)) return false
         } else if (file.isDirectory) {
-            if (!copyOrMoveDir(oneDestFile, isMove, replaceExtFileFilter)) return false
+            if (!file.copyOrMoveDir(oneDestFile, isMove, replaceExtFileFilter)) return false
         }
     }
     return !isMove || this.deleteDir()
@@ -244,6 +245,84 @@ fun File?.copyDirTo(toDir: File, replaceExtFileFilter: ExtFileFilter? = null): B
  */
 infix fun File?.copyDirTo(toDir: File): Boolean {
     return copyOrMoveDir(toDir, false)
+}
+
+/**
+ * 复制文件（需要使用文件夹过滤器的情况下）
+ * @receiver File?
+ * @param toFile File
+ * @param replaceExtFileFilter ExtFileFilter?
+ * @return Boolean
+ */
+fun File?.copyFileTo(toFile: File, replaceExtFileFilter: ExtFileFilter? = null): Boolean {
+    return copyOrMoveFile(toFile, false, replaceExtFileFilter)
+}
+
+/**
+ * 复制文件
+ * code Example :
+ *      val oldFile = ……
+ *      val newFile = ……
+ *      oldFile copyFileTo newFile
+ *
+ * @receiver File? 原文件
+ * @param toFile File 目标文件
+ * @return Boolean
+ */
+infix fun File.copyFileTo(toFile: File): Boolean {
+    return copyOrMoveFile(toFile, false)
+}
+
+/**
+ * 移动文件夹（需要使用文件夹过滤器的情况下）
+ * @receiver File? 原文件夹
+ * @param toDir 目标文件夹
+ * @param replaceExtFileFilter 过滤器。当目标文件夹存在时，是否进行替换，'true'替换; 'false' 不替换
+ * @return Boolean
+ */
+fun File?.moveDirTo(toDir: File, replaceExtFileFilter: ExtFileFilter? = null): Boolean {
+    return copyOrMoveDir(toDir, true, replaceExtFileFilter)
+}
+
+/**
+ * 移动文件夹
+ * code Example :
+ *      val oldFileDir = ……
+ *      val newFileDir = ……
+ *      oldFileDir moveDirTo newFileDir
+ *
+ * @receiver File? 原文件夹
+ * @param toDir File 目标文件夹
+ * @return Boolean
+ */
+infix fun File?.moveDirTo(toDir: File): Boolean {
+    return copyOrMoveDir(toDir, true)
+}
+
+/**
+ * 移动文件（需要使用文件夹过滤器的情况下）
+ * @receiver File?
+ * @param toFile File
+ * @param replaceExtFileFilter ExtFileFilter?
+ * @return Boolean
+ */
+fun File?.moveFileTo(toFile: File, replaceExtFileFilter: ExtFileFilter? = null): Boolean {
+    return copyOrMoveFile(toFile, true, replaceExtFileFilter)
+}
+
+/**
+ * 移动文件
+ * code Example :
+ *      val oldFile = ……
+ *      val newFile = ……
+ *      oldFile moveFileTo newFile
+ *
+ * @receiver File? 原文件
+ * @param toFile File 目标文件
+ * @return Boolean
+ */
+infix fun File.moveFileTo(toFile: File): Boolean {
+    return copyOrMoveFile(toFile, true)
 }
 
 private fun writeFileFromIS(os: OutputStream,

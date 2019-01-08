@@ -4,10 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.alibaba.fastjson.JSON
 import com.google.gson.Gson
-import top.limuyang2.android.ktutilcode.core.edit
-import top.limuyang2.android.ktutilcode.core.getSP
-import top.limuyang2.android.ktutilcode.core.read
-import top.limuyang2.android.ktutilcode.core.setStatusBarColor
+import top.limuyang2.android.ktutilcode.core.*
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
@@ -29,6 +26,15 @@ class MainActivity : AppCompatActivity() {
             c = getBoolean("test", false)
             println("---------->>>  &$c")
         }
+
+        val path = "/sdcard/jeejen/ttt2.txt".toFile()
+
+
+
+        val path2 = "/sdcard/ttt.txt".toFile()
+        println("path2.createFile()  --->  "  +  path2.createFile())
+        path2.rename("rrr.txt")
+        
 
 //        getSP().apply {
 //            c = getBoolean("test", false)
