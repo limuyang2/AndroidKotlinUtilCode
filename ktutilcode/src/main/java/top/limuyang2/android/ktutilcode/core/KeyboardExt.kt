@@ -43,7 +43,7 @@ fun View.showSoftInput() {
 fun Activity.hideSoftInput() {
     val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
     var view = currentFocus
-    if (view == null) view = View(this)
+    if (view == null) view = window.decorView
     imm.hideSoftInputFromWindow(view.windowToken, 0)
 }
 

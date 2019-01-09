@@ -1,8 +1,14 @@
 package top.limuyang2.android.ktutilcode.core
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Build
+import android.support.v4.content.FileProvider
+import java.io.File
 
 
 /**
@@ -92,4 +98,40 @@ fun Context.getAppVersionCode(packageName: String = this.packageName): Int {
         e.printStackTrace()
         -1
     }
+}
+
+/**
+ * 安装app
+ * @receiver Context
+ * @param file File
+ */
+fun Context.installApp(file: File) {
+    if (!file.exists()) return
+    this.startActivity(getInstallAppIntent(file, true))
+}
+
+/**
+ * 安装app
+ * @receiver Activity
+ * @param file File
+ * @param requestCode Int 请求码
+ */
+fun Activity.installApp(file: File, requestCode: Int) {
+    if (!file.exists()) return
+    this.startActivityForResult(getInstallAppIntent(file), requestCode)
+}
+
+private fun Context.getInstallAppIntent(file: File, isNewTask: Boolean = false): Intent {
+    val intent = Intent(Intent.ACTION_VIEW)
+    val data: Uri
+    val type = "application/vnd.android.package-archive"
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        data = Uri.fromFile(file)
+    } else {
+        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        val authority = this.packageName + ".ktutilcode.provider"
+        data = FileProvider.getUriForFile(this, authority, file)
+    }
+    intent.setDataAndType(data, type)
+    return if (isNewTask) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) else intent
 }
