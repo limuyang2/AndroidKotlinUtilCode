@@ -23,7 +23,25 @@ inline var View.gone: Boolean
         visibility = if (value) View.GONE else View.VISIBLE
     }
 
-/** Margin */
+//////////////////////////////////////////////////
+//                  Margin                      //
+//////////////////////////////////////////////////
+/**
+ * 设置view的margin值
+ * code Example :
+ *      view.margin {
+ *          bottomMargin = 20
+ *          topMargin = 20
+ *          ...
+ *      }
+ *
+ * @receiver View
+ * @param margin ViewGroup.MarginLayoutParams.() -> Unit
+ */
+fun View.margin(margin: ViewGroup.MarginLayoutParams.() -> Unit) {
+    margin(this.layoutParams as ViewGroup.MarginLayoutParams)
+}
+
 inline var View.bottomMargin: Int
     get():Int {
         return (layoutParams as ViewGroup.MarginLayoutParams).bottomMargin
@@ -60,7 +78,9 @@ fun View.setMargin(left: Int, top: Int, right: Int, bottom: Int) {
     (layoutParams as ViewGroup.MarginLayoutParams).setMargins(left, top, right, bottom)
 }
 
-/** Padding */
+//////////////////////////////////////////////////
+//                  Padding                     //
+//////////////////////////////////////////////////
 inline var View.leftPadding: Int
     get() = paddingLeft
     set(value) = setPadding(value, paddingTop, paddingRight, paddingBottom)

@@ -33,10 +33,18 @@ class MainActivity : AppCompatActivity() {
 
         val path2 = "/sdcard/ttt.txt".toFile()
         println("path2.createFile()  --->  " + path2.createFile())
-        path2.rename("rrr.txt")
+//        path2.rename("rrr.txt")
 
         val et = EditText(this)
 
+
+        println("-------> md5 :  " + "123456".md5())
+        println("-------> sha1 :  " + "123456".sha1())
+        println("-------> sha256 :  " + "123456".sha256())
+        println("-------> sha384 :  " + "123456".sha384())
+        println("-------> sha512 :  " + "123456".sha512())
+
+        println("-------> file :  " + path2.md5())
 
 //        getSP().apply {
 //            c = getBoolean("test", false)
