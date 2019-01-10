@@ -332,44 +332,36 @@ infix fun File.moveFileTo(toFile: File): Boolean {
  *
  * @return the length of directory
  */
-inline val File?.dirLength: Long
-    get() {
-        if (!isDir) return -1L
-        var len: Long = 0
-        val files = this!!.listFiles()
-        if (files != null && files.isNotEmpty()) {
-            for (file in files) {
-                len += if (file.isDirectory) {
-                    file.dirLength
-                } else {
-                    file.length()
-                }
+fun File?.dirLength(): Long {
+    if (!this.isDir) return -1L
+    var len: Long = 0
+    val files = this!!.listFiles()
+    if (files != null && files.isNotEmpty()) {
+        for (file in files) {
+            len += if (file.isDirectory) {
+                file.dirLength()
+            } else {
+                file.length()
             }
         }
-        return len
     }
+    return len
+}
 
-inline val File?.dirLengthWithStr: String
-    get() {
-        return byte2FitMemorySize(this.dirLength)
-    }
+fun File?.dirLengthWithStr(): String = byte2FitMemorySize(this.dirLength())
 
 /**
  * byte 转 B\KB\MB\GB (保留小数点后两位)
  * @param byteNum 长度
  * @return 数据大小
  */
-inline fun byte2FitMemorySize(byteNum: Long): String {
-    return if (byteNum < 0) {
-        "shouldn't be less than zero!"
-    } else if (byteNum < 1024) {
-        String.format(Locale.getDefault(), "%.2fB", byteNum.toDouble())
-    } else if (byteNum < 1048576) {
-        String.format(Locale.getDefault(), "%.2fKB", byteNum.toDouble() / 1024)
-    } else if (byteNum < 1073741824) {
-        String.format(Locale.getDefault(), "%.2fMB", byteNum.toDouble() / 1048576)
-    } else {
-        String.format(Locale.getDefault(), "%.2fGB", byteNum.toDouble() / 1073741824)
+private fun byte2FitMemorySize(byteNum: Long): String {
+    return when {
+        byteNum < 0 -> "shouldn't be less than zero!"
+        byteNum < 1024 -> String.format(Locale.getDefault(), "%.2fB", byteNum.toDouble())
+        byteNum < 1048576 -> String.format(Locale.getDefault(), "%.2fKB", byteNum.toDouble() / 1024)
+        byteNum < 1073741824 -> String.format(Locale.getDefault(), "%.2fMB", byteNum.toDouble() / 1048576)
+        else -> String.format(Locale.getDefault(), "%.2fGB", byteNum.toDouble() / 1073741824)
     }
 }
 
