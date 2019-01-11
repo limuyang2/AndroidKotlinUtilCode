@@ -46,6 +46,8 @@ class MainActivity : AppCompatActivity() {
 
         println("-------> file :  " + path2.md5())
 
+        println("-------> encryptDES : " + "123456".encryptDES(byteArrayOf(1,2,3,4,5,6,7,8)))
+
 //        getSP().apply {
 //            c = getBoolean("test", false)
 //        }

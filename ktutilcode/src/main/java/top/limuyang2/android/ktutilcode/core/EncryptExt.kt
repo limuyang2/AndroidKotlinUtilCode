@@ -1,11 +1,15 @@
 package top.limuyang2.android.ktutilcode.core
 
+import android.support.annotation.Size
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.security.DigestInputStream
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import javax.crypto.Cipher
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.DESKeySpec
 
 /**
  * @author: limuyang
@@ -77,6 +81,68 @@ fun String.sha384(): String {
 fun String.sha512(): String {
     return this.toByteArray().hashTemplate("SHA-512").convertToHexString()
 }
+
+//////////////////////////////////////////////////
+//                    DES                       //
+//////////////////////////////////////////////////
+
+/**
+ * 加密。密码字节数不能小于8
+ * @receiver String
+ * @param key String
+ * @return String
+ */
+fun String.encryptDES(@Size(min = 8) key: String): String {
+    return this.encryptDES(key.toByteArray()).convertToHexString()
+}
+
+fun String.encryptDES(@Size(min = 8) key: ByteArray): ByteArray {
+    return this.toByteArray().encryptDES(key)
+}
+
+fun ByteArray.encryptDES(@Size(min = 8) key: ByteArray): ByteArray {
+    return this.desTemplate(key, true)
+}
+
+/**
+ * 解密
+ */
+fun String.decryptDES(@Size(min = 8) key: String): String {
+    return this.decryptDES(key.toByteArray()).convertToHexString()
+}
+
+fun String.decryptDES(@Size(min = 8) key: ByteArray): ByteArray {
+    return this.toByteArray().decryptDES(key)
+}
+
+fun ByteArray.decryptDES(@Size(min = 8) key: ByteArray): ByteArray {
+    return this.desTemplate(key, false)
+}
+
+private fun ByteArray.desTemplate(key: ByteArray, isEncrypt: Boolean): ByteArray {
+    try {
+        //1.初始化SecretKeyFactory（参数1：加密/解密模式）
+        val kf = SecretKeyFactory.getInstance("DES")
+        val keySpe = DESKeySpec(key)
+        val secretKey = kf.generateSecret(keySpe)
+
+        //2.创建cipher对象
+        val cipher = Cipher.getInstance("DES/ECB/PKCS5Padding")
+        //加密模式
+        cipher.init(if (isEncrypt) Cipher.ENCRYPT_MODE else Cipher.DECRYPT_MODE, secretKey)
+        //3.加密/解密
+        return cipher.doFinal(this)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return ByteArray(0)
+    }
+}
+
+//////////////////////////////////////////////////
+//                    AES                       //
+//////////////////////////////////////////////////
+
+
 
 ///////////////////////////////////////////////////////////////////////////
 // other utils methods
