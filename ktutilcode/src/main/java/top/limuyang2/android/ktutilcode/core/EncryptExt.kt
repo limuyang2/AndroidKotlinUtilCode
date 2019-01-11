@@ -10,6 +10,8 @@ import java.security.NoSuchAlgorithmException
 import javax.crypto.Cipher
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.DESKeySpec
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 /**
  * @author: limuyang
@@ -86,55 +88,62 @@ fun String.sha512(): String {
 //                    DES                       //
 //////////////////////////////////////////////////
 
+private const val DEF_DES_TF = "DES/ECB/ZeroBytePadding"
+
 /**
- * 加密。密码字节数不能小于8
+ * DES加密。密码字节数不能小于8。默认模式：DES/ECB/PKCS5Padding
  * @receiver String
  * @param key String
- * @return String
+ * @return String 十六进制字符串
  */
-fun String.encryptDES(@Size(min = 8) key: String): String {
-    return this.encryptDES(key.toByteArray()).convertToHexString()
+fun String.encryptDES(@Size(min = 8) key: String, transformation: String = DEF_DES_TF): String {
+    return this.encryptDES(key.toByteArray(), transformation).convertToHexString()
 }
 
-fun String.encryptDES(@Size(min = 8) key: ByteArray): ByteArray {
-    return this.toByteArray().encryptDES(key)
+fun String.encryptDES(@Size(min = 8) key: ByteArray, transformation: String = DEF_DES_TF): ByteArray {
+    return this.toByteArray().encryptDES(key, transformation)
 }
 
-fun ByteArray.encryptDES(@Size(min = 8) key: ByteArray): ByteArray {
-    return this.desTemplate(key, true)
+fun ByteArray.encryptDES(@Size(min = 8) key: ByteArray, transformation: String = DEF_DES_TF): ByteArray {
+    return this.desTemplate(key, true, transformation)
 }
 
 /**
- * 解密
+ * DES解密
  */
-fun String.decryptDES(@Size(min = 8) key: String): String {
-    return this.decryptDES(key.toByteArray()).convertToHexString()
+fun String.decryptDES(@Size(min = 8) key: String, transformation: String = DEF_DES_TF): String {
+    return String(this.decryptDES(key.toByteArray(), transformation), Charsets.UTF_8)
 }
 
-fun String.decryptDES(@Size(min = 8) key: ByteArray): ByteArray {
-    return this.toByteArray().decryptDES(key)
+fun String.decryptDES(@Size(min = 8) key: ByteArray, transformation: String = DEF_DES_TF): ByteArray {
+    return this.convertToBytes().decryptDES(key, transformation)
 }
 
-fun ByteArray.decryptDES(@Size(min = 8) key: ByteArray): ByteArray {
-    return this.desTemplate(key, false)
+fun ByteArray.decryptDES(@Size(min = 8) key: ByteArray, transformation: String = DEF_DES_TF): ByteArray {
+    return this.desTemplate(key, false, transformation)
 }
 
-private fun ByteArray.desTemplate(key: ByteArray, isEncrypt: Boolean): ByteArray {
-    try {
-        //1.初始化SecretKeyFactory（参数1：加密/解密模式）
+private fun ByteArray.desTemplate(key: ByteArray, isEncrypt: Boolean, transformation: String): ByteArray {
+    return try {
+        //1.初始化SecretKeyFactory
         val kf = SecretKeyFactory.getInstance("DES")
         val keySpe = DESKeySpec(key)
         val secretKey = kf.generateSecret(keySpe)
 
-        //2.创建cipher对象
-        val cipher = Cipher.getInstance("DES/ECB/PKCS5Padding")
+        //创建cipher对象 https://docs.oracle.com/javase/7/docs/api/javax/crypto/Cipher.html
+        val cipher = Cipher.getInstance(transformation)
         //加密模式
-        cipher.init(if (isEncrypt) Cipher.ENCRYPT_MODE else Cipher.DECRYPT_MODE, secretKey)
+        if (transformation.contains("ECB")) {
+            cipher.init(if (isEncrypt) Cipher.ENCRYPT_MODE else Cipher.DECRYPT_MODE, secretKey)
+        } else {
+            val iv = IvParameterSpec(key)
+            cipher.init(if (isEncrypt) Cipher.ENCRYPT_MODE else Cipher.DECRYPT_MODE, secretKey, iv)
+        }
         //3.加密/解密
-        return cipher.doFinal(this)
+        cipher.doFinal(this)
     } catch (e: Exception) {
         e.printStackTrace()
-        return ByteArray(0)
+        ByteArray(0)
     }
 }
 
@@ -142,7 +151,62 @@ private fun ByteArray.desTemplate(key: ByteArray, isEncrypt: Boolean): ByteArray
 //                    AES                       //
 //////////////////////////////////////////////////
 
+private const val DEF_AES_TF = "AES/ECB/ZeroBytePadding"
 
+/**
+ * AES加密。密码字节数不能小于16。默认模式：AES/ECB/PKCS5Padding
+ * @receiver String
+ * @param key String
+ * @return String
+ */
+fun String.encryptAES(@Size(min = 16) key: String, transformation: String = DEF_AES_TF): String {
+    return this.encryptAES(key.toByteArray(), transformation).convertToHexString()
+}
+
+fun String.encryptAES(@Size(min = 16) key: ByteArray, transformation: String = DEF_AES_TF): ByteArray {
+    return this.toByteArray().encryptAES(key, transformation)
+}
+
+fun ByteArray.encryptAES(@Size(min = 16) key: ByteArray, transformation: String = DEF_AES_TF): ByteArray {
+    return this.aesTemplate(key, true, transformation)
+}
+
+/**
+ * AES解密
+ */
+fun String.decryptAES(@Size(min = 16) key: String, transformation: String = DEF_AES_TF): String {
+    return String(this.decryptAES(key.toByteArray(), transformation), Charsets.UTF_8)
+}
+
+fun String.decryptAES(@Size(min = 16) key: ByteArray, transformation: String = DEF_AES_TF): ByteArray {
+    return this.convertToBytes().decryptAES(key, transformation)
+}
+
+fun ByteArray.decryptAES(@Size(min = 16) key: ByteArray, transformation: String = DEF_AES_TF): ByteArray {
+    return this.aesTemplate(key, false, transformation)
+}
+
+private fun ByteArray.aesTemplate(key: ByteArray, isEncrypt: Boolean, transformation: String): ByteArray {
+    return try {
+        //1.生产秘钥
+        val keySpec = SecretKeySpec(key, "AES")
+
+        //2.创建cipher对象 https://docs.oracle.com/javase/7/docs/api/javax/crypto/Cipher.html
+        val cipher = Cipher.getInstance(transformation)
+        //加密模式
+        if (transformation.contains("ECB")) {
+            cipher.init(if (isEncrypt) Cipher.ENCRYPT_MODE else Cipher.DECRYPT_MODE, keySpec)
+        } else {
+            val iv = IvParameterSpec(key)
+            cipher.init(if (isEncrypt) Cipher.ENCRYPT_MODE else Cipher.DECRYPT_MODE, keySpec, iv)
+        }
+        //3.加密/解密
+        cipher.doFinal(this)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        ByteArray(0)
+    }
+}
 
 ///////////////////////////////////////////////////////////////////////////
 // other utils methods
@@ -173,4 +237,32 @@ private fun ByteArray.convertToHexString(): String {
     return stringBuilder.toString()
 }
 
+/**
+ * 十六进制String转换成ByteArray
+ *
+ * @return ByteArray
+ */
+fun String.convertToBytes(): ByteArray {
+    if (this == "") {
+        return ByteArray(0)
+    }
+    val newHexString = this.trim().toUpperCase()
+    val length = newHexString.length / 2
+    val hexChars = newHexString.toCharArray()
+    val d = ByteArray(length)
+    for (i in 0 until length) {
+        val pos = i * 2
+        d[i] = (charToByte(hexChars[pos]).toInt() shl 4 or charToByte(hexChars[pos + 1]).toInt()).toByte()
+    }
+    return d
+}
 
+/**
+ * Convert char to byte
+ * @param c char
+ * *
+ * @return byte
+ */
+private fun charToByte(c: Char): Byte {
+    return "0123456789ABCDEF".indexOf(c).toByte()
+}
