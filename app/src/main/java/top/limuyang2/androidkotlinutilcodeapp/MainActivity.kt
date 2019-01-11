@@ -31,8 +31,8 @@ class MainActivity : AppCompatActivity() {
         val path = "/sdcard/jeejen/ttt2.txt".toFile()
 
 
-        val path2 = "/sdcard/ttt.txt".toFile()
-        println("path2.createFile()  --->  " + path2.createFile())
+        val newFile = "/sdcard/ttt.txt".toFile()
+        println("path2.createFile()  --->  " + newFile.createFile())
 //        path2.rename("rrr.txt")
 
         val et = EditText(this)
@@ -44,14 +44,15 @@ class MainActivity : AppCompatActivity() {
         println("-------> sha384 :  " + "123456".sha384())
         println("-------> sha512 :  " + "123456".sha512())
 
-        println("-------> file :  " + path2.md5())
+        println("-------> file :  " + newFile.md5())
 
+        val encryptDES = "123456".encryptDES("12345678")
+        println("-------> encryptDES : $encryptDES")
+        println("-------> decryptDES : " + encryptDES.decryptDES("12345678"))
 
-        println("-------> encryptDES : " + "123456".encryptDES("12345678"))
-        println("-------> decryptDES : " + "b80a17bdec2dee79".decryptDES("12345678"))
-
-        println("-------> encryptAES : " + "123456".encryptAES("1234567812345678"))
-        println("-------> decryptAES : " + "f22764ed57cf2db6a615805d695d4e05".decryptAES("1234567812345678"))
+        val encryptAES = "123456".encryptAES("1234567812345678", "AES/CBC/PKCS5Padding")
+        println("-------> encryptAES : $encryptAES")
+        println("-------> decryptAES : " + encryptAES.decryptAES("1234567812345678", "AES/CBC/PKCS5Padding"))
 
 //        getSP().apply {
 //            c = getBoolean("test", false)

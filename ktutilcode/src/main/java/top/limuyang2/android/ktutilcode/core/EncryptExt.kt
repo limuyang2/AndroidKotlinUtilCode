@@ -91,10 +91,12 @@ fun String.sha512(): String {
 private const val DEF_DES_TF = "DES/ECB/ZeroBytePadding"
 
 /**
- * DES加密。密码字节数不能小于8。默认模式：DES/ECB/PKCS5Padding
+ * DES加密。密码字节数不能小于8。
  * @receiver String
  * @param key String
- * @return String 十六进制字符串
+ * @param transformation String 模式选择，默认为: DES/ECB/ZeroBytePadding
+ *                          https://docs.oracle.com/javase/7/docs/api/javax/crypto/Cipher.html
+ * @return String
  */
 fun String.encryptDES(@Size(min = 8) key: String, transformation: String = DEF_DES_TF): String {
     return this.encryptDES(key.toByteArray(), transformation).convertToHexString()
@@ -154,9 +156,11 @@ private fun ByteArray.desTemplate(key: ByteArray, isEncrypt: Boolean, transforma
 private const val DEF_AES_TF = "AES/ECB/ZeroBytePadding"
 
 /**
- * AES加密。密码字节数不能小于16。默认模式：AES/ECB/PKCS5Padding
+ * AES加密。密码字节数不能小于16。
  * @receiver String
  * @param key String
+ * @param transformation String 模式选择，默认为: AES/ECB/ZeroBytePadding
+ *                          https://docs.oracle.com/javase/7/docs/api/javax/crypto/Cipher.html
  * @return String
  */
 fun String.encryptAES(@Size(min = 16) key: String, transformation: String = DEF_AES_TF): String {
