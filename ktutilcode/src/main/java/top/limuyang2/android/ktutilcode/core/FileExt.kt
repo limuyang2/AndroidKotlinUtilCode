@@ -1,7 +1,6 @@
 package top.limuyang2.android.ktutilcode.core
 
 import java.io.*
-import java.util.*
 
 
 typealias ExtFileFilter = (file: File) -> Boolean
@@ -348,22 +347,7 @@ fun File?.dirLength(): Long {
     return len
 }
 
-fun File?.dirLengthWithStr(): String = byte2FitMemorySize(this.dirLength())
-
-/**
- * byte 转 B\KB\MB\GB (保留小数点后两位)
- * @param byteNum 长度
- * @return 数据大小
- */
-private fun byte2FitMemorySize(byteNum: Long): String {
-    return when {
-        byteNum < 0 -> "shouldn't be less than zero!"
-        byteNum < 1024 -> String.format(Locale.getDefault(), "%.2fB", byteNum.toDouble())
-        byteNum < 1048576 -> String.format(Locale.getDefault(), "%.2fKB", byteNum.toDouble() / 1024)
-        byteNum < 1073741824 -> String.format(Locale.getDefault(), "%.2fMB", byteNum.toDouble() / 1048576)
-        else -> String.format(Locale.getDefault(), "%.2fGB", byteNum.toDouble() / 1073741824)
-    }
-}
+fun File?.dirLengthWithStr(): String = this.dirLength().toFitMemorySize()
 
 private fun writeFileFromIS(os: OutputStream,
                             `is`: InputStream): Boolean {

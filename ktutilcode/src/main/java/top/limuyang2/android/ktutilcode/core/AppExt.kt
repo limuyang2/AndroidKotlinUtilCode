@@ -1,9 +1,11 @@
 package top.limuyang2.android.ktutilcode.core
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.Signature
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
@@ -134,4 +136,39 @@ private fun Context.getInstallAppIntent(file: File, isNewTask: Boolean = false):
     }
     intent.setDataAndType(data, type)
     return if (isNewTask) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) else intent
+}
+
+/**
+ * 获取app签名
+ * @receiver Context
+ * @param packageName String
+ * @return Array<Signature>?
+ */
+@SuppressLint("PackageManagerGetSignatures")
+fun Context.getAppSignature(packageName: String = this.packageName): Array<Signature>? {
+    if (packageName.isBlank()) return null
+    return try {
+        packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)?.signatures
+    } catch (e: PackageManager.NameNotFoundException) {
+        e.printStackTrace()
+        null
+    }
+}
+
+private fun Context.getAppSignatureSHA(algorithm: String, packageName: String): String {
+    if (packageName.isBlank()) return ""
+    val signature = getAppSignature(packageName)
+    return if (signature == null || signature.isEmpty()) "" else signature[0].toByteArray().hashTemplate(algorithm).convertToHexString().replace("(?<=[0-9A-F]{2})[0-9A-F]{2}", ":$0")
+}
+
+fun Context.getAppSignatureSHA1(packageName: String = this.packageName): String {
+    return getAppSignatureSHA("SHA-1", packageName)
+}
+
+fun Context.getAppSignatureSHA256(packageName: String = this.packageName): String {
+    return getAppSignatureSHA("SHA-256", packageName)
+}
+
+fun Context.getAppSignatureMD5(packageName: String = this.packageName): String {
+    return getAppSignatureSHA("MD5", packageName)
 }

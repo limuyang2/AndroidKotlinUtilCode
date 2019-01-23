@@ -216,7 +216,7 @@ private fun ByteArray.aesTemplate(key: ByteArray, isEncrypt: Boolean, transforma
 // other utils methods
 ///////////////////////////////////////////////////////////////////////////
 
-private fun ByteArray.hashTemplate(algorithm: String): ByteArray {
+fun ByteArray.hashTemplate(algorithm: String): ByteArray {
     return try {
         val md = MessageDigest.getInstance(algorithm)
         md.update(this)
@@ -226,47 +226,4 @@ private fun ByteArray.hashTemplate(algorithm: String): ByteArray {
         e.printStackTrace()
         ByteArray(0)
     }
-}
-
-private fun ByteArray.convertToHexString(): String {
-    val stringBuilder = StringBuilder()
-    this.forEach {
-        val value = it.toInt() and 0xff
-        var hexString = Integer.toHexString(value)
-        if (hexString.length < 2) {
-            hexString = "0$hexString"
-        }
-        stringBuilder.append(hexString)
-    }
-    return stringBuilder.toString()
-}
-
-/**
- * 十六进制String转换成ByteArray
- *
- * @return ByteArray
- */
-fun String.convertToBytes(): ByteArray {
-    if (this == "") {
-        return ByteArray(0)
-    }
-    val newHexString = this.trim().toUpperCase()
-    val length = newHexString.length / 2
-    val hexChars = newHexString.toCharArray()
-    val d = ByteArray(length)
-    for (i in 0 until length) {
-        val pos = i * 2
-        d[i] = (charToByte(hexChars[pos]).toInt() shl 4 or charToByte(hexChars[pos + 1]).toInt()).toByte()
-    }
-    return d
-}
-
-/**
- * Convert char to byte
- * @param c char
- * *
- * @return byte
- */
-private fun charToByte(c: Char): Byte {
-    return "0123456789ABCDEF".indexOf(c).toByte()
 }
