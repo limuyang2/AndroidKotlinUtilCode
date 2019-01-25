@@ -12,6 +12,9 @@ import android.support.annotation.RequiresApi
 import android.util.Log
 import android.util.TypedValue
 import android.view.*
+import top.limuyang2.android.ktutilcode.KtUtilCode
+
+
 
 
 private const val TAG_STATUS_BAR = "TAG_STATUS_BAR"
@@ -292,8 +295,32 @@ inline var Window.navBarVisible: Boolean
         }
     }
     get() {
-        val visibility = decorView.systemUiVisibility
-        return visibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION == 0
+//        val visibility = decorView.systemUiVisibility
+//        return visibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION == 0
+
+        var isVisible = false
+        val decorView = decorView as ViewGroup
+        var i = 0
+        val count = decorView.childCount
+        while (i < count) {
+            val child = decorView.getChildAt(i)
+            val id = child.id
+            if (id != View.NO_ID) {
+                val resourceEntryName = KtUtilCode.app
+                        .resources
+                        .getResourceEntryName(id)
+                if ("navigationBarBackground" == resourceEntryName && child.visibility == View.VISIBLE) {
+                    isVisible = true
+                    break
+                }
+            }
+            i++
+        }
+        if (isVisible) {
+            val visibility = decorView.systemUiVisibility
+            isVisible = visibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION == 0
+        }
+        return isVisible
     }
 
 /**
