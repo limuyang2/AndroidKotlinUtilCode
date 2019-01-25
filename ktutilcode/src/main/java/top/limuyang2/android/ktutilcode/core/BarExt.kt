@@ -158,7 +158,7 @@ fun Activity.setStatusBarColor(@ColorInt color: Int,
         if (fakeStatusBarView.visibility == View.GONE) {
             fakeStatusBarView.visibility = View.VISIBLE
         }
-        fakeStatusBarView.setBackgroundColor(getStatusBarColor(color, alpha))
+        fakeStatusBarView.setBackgroundColor(createStatusBarColor(color, alpha))
     } else {
         parent.addView(createColorStatusBarView(this, color, alpha))
     }
@@ -178,7 +178,7 @@ fun View.setStatusBarColor(@ColorInt color: Int,
     val layoutParams = layoutParams
     layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
     layoutParams.height = context.statusBarHeight
-    setBackgroundColor(getStatusBarColor(color, alpha))
+    setBackgroundColor(createStatusBarColor(color, alpha))
 }
 
 
@@ -196,7 +196,7 @@ fun Window.showColorView() {
 }
 
 
-private fun getStatusBarColor(color: Int, alpha: Int): Int {
+private fun createStatusBarColor(color: Int, alpha: Int): Int {
     if (alpha == 0) return color
     val a = 1 - alpha / 255f
     var red = color shr 16 and 0xff
@@ -214,7 +214,7 @@ private fun createColorStatusBarView(context: Context,
     val statusBarView = View(context)
     statusBarView.layoutParams = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, context.statusBarHeight)
-    statusBarView.setBackgroundColor(getStatusBarColor(color, alpha))
+    statusBarView.setBackgroundColor(createStatusBarColor(color, alpha))
     statusBarView.tag = TAG_COLOR
     return statusBarView
 }
