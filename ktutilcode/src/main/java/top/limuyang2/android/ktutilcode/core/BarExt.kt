@@ -2,18 +2,19 @@ package top.limuyang2.android.ktutilcode.core
 
 import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Build
 import android.support.annotation.ColorInt
-import android.support.annotation.IntRange
+import android.support.annotation.NonNull
 import android.support.annotation.RequiresApi
+import android.util.Log
 import android.util.TypedValue
 import android.view.*
-import android.widget.LinearLayout
 
 
-private const val TAG_COLOR = "TAG_COLOR"
+private const val TAG_STATUS_BAR = "TAG_STATUS_BAR"
 const val TAG_OFFSET = "TAG_OFFSET"
 private const val KEY_OFFSET = -123
 
@@ -134,12 +135,10 @@ fun View.subtractMarginTopEqualStatusBarHeight() {
  * Set the status bar's color.
  *
  * @param color    The status bar's color.
- * @param alpha    The status bar's alpha which isn't the same as alpha in the color.
  * @param isDecor  True to add fake status bar in DecorView,
  * false to add fake status bar in ContentView.
  */
 fun Activity.setStatusBarColor(@ColorInt color: Int,
-                               @IntRange(from = 0, to = 255) alpha: Int = 0,
                                isDecor: Boolean = true) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return
     transparentStatusBar()
@@ -153,14 +152,14 @@ fun Activity.setStatusBarColor(@ColorInt color: Int,
         window.decorView as ViewGroup
     else
         findViewById<View>(android.R.id.content) as ViewGroup
-    val fakeStatusBarView = parent.findViewWithTag<View>(TAG_COLOR)
+    val fakeStatusBarView = parent.findViewWithTag<View>(TAG_STATUS_BAR)
     if (fakeStatusBarView != null) {
         if (fakeStatusBarView.visibility == View.GONE) {
             fakeStatusBarView.visibility = View.VISIBLE
         }
-        fakeStatusBarView.setBackgroundColor(createStatusBarColor(color, alpha))
+        fakeStatusBarView.setBackgroundColor(color)
     } else {
-        parent.addView(createColorStatusBarView(this, color, alpha))
+        parent.addView(createColorStatusBarView(this, color))
     }
 }
 
@@ -168,54 +167,49 @@ fun Activity.setStatusBarColor(@ColorInt color: Int,
  * Set the status bar's color.
  *
  * @param color         The status bar's color.
- * @param alpha         The status bar's alpha which isn't the same as alpha in the color.
  */
-fun View.setStatusBarColor(@ColorInt color: Int,
-                           @IntRange(from = 0, to = 255) alpha: Int = 0) {
+fun View.setStatusBarColor(@ColorInt color: Int) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return
+    val activity = getActivityByView(this) ?: return
+    activity.transparentStatusBar()
     this.visibility = View.VISIBLE
-    (context as Activity).transparentStatusBar()
-    val layoutParams = layoutParams
+    val layoutParams = this.layoutParams
     layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
     layoutParams.height = context.statusBarHeight
-    setBackgroundColor(createStatusBarColor(color, alpha))
+    this.setBackgroundColor(color)
 }
 
+private fun getActivityByView(@NonNull view: View): Activity? {
+    var context = view.context
+    while (context is ContextWrapper) {
+        if (context is Activity) {
+            return context
+        }
+        context = context.baseContext
+    }
+    Log.e("BarUtils", "the view's Context is not an Activity.")
+    return null
+}
 
 fun Window.hideColorView() {
     val decorView = decorView as ViewGroup
-    val fakeStatusBarView = decorView.findViewWithTag<View>(TAG_COLOR) ?: return
+    val fakeStatusBarView = decorView.findViewWithTag<View>(TAG_STATUS_BAR) ?: return
     fakeStatusBarView.visibility = View.GONE
 }
 
-
 fun Window.showColorView() {
     val decorView = decorView as ViewGroup
-    val fakeStatusBarView = decorView.findViewWithTag<View>(TAG_COLOR) ?: return
+    val fakeStatusBarView = decorView.findViewWithTag<View>(TAG_STATUS_BAR) ?: return
     fakeStatusBarView.visibility = View.VISIBLE
 }
 
-
-private fun createStatusBarColor(color: Int, alpha: Int): Int {
-    if (alpha == 0) return color
-    val a = 1 - alpha / 255f
-    var red = color shr 16 and 0xff
-    var green = color shr 8 and 0xff
-    var blue = color and 0xff
-    red = (red * a + 0.5).toInt()
-    green = (green * a + 0.5).toInt()
-    blue = (blue * a + 0.5).toInt()
-    return Color.argb(255, red, green, blue)
-}
-
 private fun createColorStatusBarView(context: Context,
-                                     color: Int,
-                                     alpha: Int): View {
+                                     color: Int): View {
     val statusBarView = View(context)
-    statusBarView.layoutParams = LinearLayout.LayoutParams(
+    statusBarView.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, context.statusBarHeight)
-    statusBarView.setBackgroundColor(createStatusBarColor(color, alpha))
-    statusBarView.tag = TAG_COLOR
+    statusBarView.setBackgroundColor(color)
+    statusBarView.tag = TAG_STATUS_BAR
     return statusBarView
 }
 

@@ -2,6 +2,7 @@ package top.limuyang2.android.ktutilcode.core
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,6 +12,8 @@ import android.net.Uri
 import android.os.Build
 import android.support.v4.content.FileProvider
 import java.io.File
+
+
 
 
 /**
@@ -104,6 +107,8 @@ fun Context.getAppVersionCode(packageName: String = this.packageName): Int {
 
 /**
  * 安装app
+ * {@code <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />}
+ *
  * @receiver Context
  * @param file File
  */
@@ -114,6 +119,8 @@ fun Context.installApp(file: File) {
 
 /**
  * 安装app
+ * {@code <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />}
+ *
  * @receiver Activity
  * @param file File
  * @param requestCode Int 请求码
@@ -134,6 +141,7 @@ private fun Context.getInstallAppIntent(file: File, isNewTask: Boolean = false):
         val authority = this.packageName + ".ktutilcode.provider"
         data = FileProvider.getUriForFile(this, authority, file)
     }
+    grantUriPermission(packageName, data, Intent.FLAG_GRANT_READ_URI_PERMISSION)
     intent.setDataAndType(data, type)
     return if (isNewTask) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) else intent
 }
@@ -171,4 +179,22 @@ fun Context.getAppSignatureSHA256(packageName: String = this.packageName): Strin
 
 fun Context.getAppSignatureMD5(packageName: String = this.packageName): String {
     return getAppSignatureSHA("MD5", packageName)
+}
+
+/**
+ * 判断 App 是否处于前台
+ * @receiver Context
+ * @return Boolean
+ */
+fun Context.isAppForeground(): Boolean {
+    val am = this.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+            ?: return false
+    val info = am.runningAppProcesses
+    if (info.isNullOrEmpty()) return false
+    for (aInfo in info) {
+        if (aInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+            return aInfo.processName == this.packageName
+        }
+    }
+    return false
 }

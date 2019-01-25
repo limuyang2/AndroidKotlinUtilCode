@@ -2,6 +2,7 @@ package top.limuyang2.android.ktutilcode
 
 import android.annotation.SuppressLint
 import android.app.Application
+import top.limuyang2.android.ktutilcode.core.ActivityManageUtil
 import java.lang.reflect.InvocationTargetException
 
 object KtUtilCode {
@@ -10,6 +11,7 @@ object KtUtilCode {
 
     fun init(application: Application) {
         this.mApplication = application
+        ActivityManageUtil.init(application)
     }
 
     val app: Application
