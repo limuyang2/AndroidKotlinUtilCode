@@ -19,31 +19,31 @@ object ActivityManageUtil {
 
         internal val mActivityList = LinkedList<Activity>()
 
-        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle) {
+        override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
             setTopActivity(activity)
         }
 
-        override fun onActivityStarted(activity: Activity) {
+        override fun onActivityStarted(activity: Activity?) {
             setTopActivity(activity)
         }
 
-        override fun onActivityResumed(activity: Activity) {
+        override fun onActivityResumed(activity: Activity?) {
             setTopActivity(activity)
         }
 
-        override fun onActivityPaused(activity: Activity) {/**/
+        override fun onActivityPaused(activity: Activity?) {/**/
         }
 
-        override fun onActivityStopped(activity: Activity) {}
+        override fun onActivityStopped(activity: Activity?) {}
 
-        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {/**/
+        override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {/**/
         }
 
-        override fun onActivityDestroyed(activity: Activity) {
+        override fun onActivityDestroyed(activity: Activity?) {
             mActivityList.remove(activity)
         }
 
-        private fun setTopActivity(activity: Activity) {
+        private fun setTopActivity(activity: Activity?) {
             if (mActivityList.contains(activity)) {
                 if (mActivityList.last != activity) {
                     mActivityList.remove(activity)
@@ -57,7 +57,6 @@ object ActivityManageUtil {
 
     fun init(application: Application) {
         application.registerActivityLifecycleCallbacks(ACTIVITY_LIFECYCLE)
-
     }
 
     /**

@@ -12,11 +12,13 @@ import java.lang.reflect.Type
 
 class MainActivity : AppCompatActivity() {
 
+    data class A(val name: String = "22", val age: Int = 2)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        setStatusBarColor(resources.getColor(R.color.colorPrimary), 100)
+        setStatusBarColor(resources.getColor(R.color.colorPrimary), true)
 
         getSP().edit {
             putBoolean("test", true)
@@ -54,6 +56,22 @@ class MainActivity : AppCompatActivity() {
         println("-------> encryptAES : $encryptAES")
         println("-------> decryptAES : " + encryptAES.decryptAES("1234567812345678", "AES/CBC/PKCS5Padding"))
 
+        val e = EditText(this)
+        e.onTextChange {
+            onTextChanged { s, start, before, count -> }
+            afterTextChanged {
+
+            }
+            beforeTextChanged { s, start, count, after -> }
+        }
+
+        ArrayList<String>().apply {
+            add("23")
+            add("34")
+            add("55")
+        }.logD()
+
+        e.logJson()
 //        getSP().apply {
 //            c = getBoolean("test", false)
 //        }
