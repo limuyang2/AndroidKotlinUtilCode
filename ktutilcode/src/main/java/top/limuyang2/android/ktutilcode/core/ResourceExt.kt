@@ -8,7 +8,7 @@ import top.limuyang2.android.ktutilcode.KtUtilCode
 
 @Suppress("DEPRECATION")
 @ColorInt
-fun Int.toColor(): Int {
+fun Int.getColor(): Int {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         KtUtilCode.app.resources.getColor(this, KtUtilCode.app.theme)
     } else {
@@ -16,16 +16,16 @@ fun Int.toColor(): Int {
     }
 }
 
-fun Int.toDimension(): Float {
+fun Int.getDimension(): Float {
     return KtUtilCode.app.resources.getDimension(this)
 }
 
-fun Int.toString(): String {
+fun Int.getString(): String {
     return KtUtilCode.app.resources.getString(this)
 }
 
 @Suppress("DEPRECATION")
-fun Int.toDrawable(): Drawable {
+fun Int.getDrawable(): Drawable {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         KtUtilCode.app.resources.getDrawable(this, KtUtilCode.app.theme)
     } else {
