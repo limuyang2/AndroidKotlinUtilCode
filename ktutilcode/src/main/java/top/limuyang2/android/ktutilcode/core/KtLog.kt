@@ -60,7 +60,6 @@ enum class LogType {
     abstract fun value(): Int
 }
 
-//object LogUtils {
 private const val LOG_FILE = 0x10
 private const val LOG_JSON = 0x20
 private const val LOG_XML = 0x30
@@ -93,9 +92,26 @@ private val I_FORMATTER_MAP = SimpleArrayMap<Class<*>, IFormatter>()
 
 private val typeArray = charArrayOf('V', 'D', 'I', 'W', 'E', 'A')
 
+/**
+ * 日志配置类
+ * @property dir String?  文件存储目录
+ * @property filePrefix String  文件前缀
+ * @property logSwitch Boolean  总开关
+ * @property log2ConsoleSwitch Boolean  控制台开关
+ * @property globalTag String  全局 tag
+ * @property logHeadSwitch Boolean  头部信息开关
+ * @property log2FileSwitch Boolean  文件开关
+ * @property logBorderSwitch Boolean  边框开关
+ * @property singleTagSwitch Boolean  单一 tag 开关
+ * @property consoleFilter LogType  控制台过滤器
+ * @property fileFilter LogType  文件过滤器
+ * @property stackDeep Int  栈深度
+ * @property stackOffset Int  栈偏移
+ * @property saveDays Int  可保留天数（设置值必须大于1天）
+ */
 class LogConfig {
     // The default storage directory of log.
-    var defaultDir: String? = null
+    internal var defaultDir: String? = null
         private set
 
     // The storage directory of log.
@@ -466,6 +482,19 @@ private fun processTagAndHead(mTag: String): TagHead {
             return TagHead(tag, null, ": ")
         }
         var targetElement = stackTrace[stackIndex]
+        //适配kotlin
+        for (i in stackIndex until stackTrace.size) {
+            if (targetElement.className.contains("KtLog")) {
+                targetElement = if (i + 1 <= stackTrace.size - 1) {
+                    stackTrace[i + 1]
+                } else {
+                    stackTrace[stackTrace.size - 1]
+                }
+            } else {
+                break
+            }
+        }
+
         val fileName = getFileName(targetElement)
         if (config.tagIsSpace && tag.isBlank()) {
             val index = fileName.indexOf('.')// Use proguard may not find '.'.
@@ -489,7 +518,6 @@ private fun processTagAndHead(mTag: String): TagHead {
                         config.stackDeep,
                         stackTrace.size - stackIndex
                 ))
-
 
                 consoleHead[0] = head
                 val spaceLen = tName.length + 2
@@ -886,6 +914,9 @@ private fun getClassFromObject(obj: Any): Class<*> {
  */
 fun getLogConfig(): LogConfig = config
 
+///////////////////////////////////////////////////////////////////////////
+// log方法
+///////////////////////////////////////////////////////////////////////////
 fun logV(vararg contents: Any?) {
     log(LogType.V.value(), config.globalTag, *contents)
 }
@@ -996,44 +1027,44 @@ fun log(type: Int, tag: String, vararg contents: Any?) {
         print2File(typeLow, tagHead.tag, tagHead.fileHead + body)
     }
 }
-//}
+
 
 ///////////////////////////////////////////////////////////////////////////
 // 扩展方法
 ///////////////////////////////////////////////////////////////////////////
 
-fun Any?.logV(tag: String = config.globalTag) {
+fun Any?.logV(tag: String = getLogConfig().globalTag) {
     logVTag(tag, this)
 }
 
-fun Any?.logD(tag: String = config.globalTag) {
+fun Any?.logD(tag: String = getLogConfig().globalTag) {
     logDTag(tag, this)
 }
 
-fun Any?.logI(tag: String = config.globalTag) {
+fun Any?.logI(tag: String = getLogConfig().globalTag) {
     logITag(tag, this)
 }
 
-fun Any?.logW(tag: String = config.globalTag) {
+fun Any?.logW(tag: String = getLogConfig().globalTag) {
     logW(tag, this)
 }
 
-fun Any?.logE(tag: String = config.globalTag) {
+fun Any?.logE(tag: String = getLogConfig().globalTag) {
     logE(tag, this)
 }
 
-fun Any?.logA(tag: String = config.globalTag) {
+fun Any?.logA(tag: String = getLogConfig().globalTag) {
     logA(tag, this)
 }
 
-fun Any?.logFile(type: LogType = LogType.D, tag: String = config.globalTag) {
+fun Any?.logFile(type: LogType = LogType.D, tag: String = getLogConfig().globalTag) {
     logFile(type, tag, this)
 }
 
-fun Any?.logJson(type: LogType = LogType.D, tag: String = config.globalTag) {
+fun Any?.logJson(type: LogType = LogType.D, tag: String = getLogConfig().globalTag) {
     logJson(type, tag, this)
 }
 
-fun String?.logXml(type: LogType = LogType.D, tag: String = config.globalTag) {
+fun String?.logXml(type: LogType = LogType.D, tag: String = getLogConfig().globalTag) {
     logXml(type, tag, this)
 }

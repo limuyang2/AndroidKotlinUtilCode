@@ -69,9 +69,9 @@ class MainActivity : AppCompatActivity() {
             add("23")
             add("34")
             add("55")
-        }.logD()
+        }.logV()
+logD(e)
 
-        e.logJson()
 //        getSP().apply {
 //            c = getBoolean("test", false)
 //        }
