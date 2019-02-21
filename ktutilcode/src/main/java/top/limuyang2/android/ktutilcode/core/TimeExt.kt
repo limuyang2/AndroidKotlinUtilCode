@@ -18,12 +18,12 @@ import java.util.*
  * @param format DateFormat 默认格式：yyyy-MM-dd HH:mm:ss
  * @return String
  */
-fun Long.timestampToStr(format: DateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())): String {
-    return format.format(Date(this))
-}
-
 fun Long.timestampToStr(formatStr: String = "yyyy-MM-dd HH:mm:ss"): String {
     return SimpleDateFormat(formatStr, Locale.getDefault()).format(Date(this))
+}
+
+fun String.timestampToStr(formatStr: String = "yyyy-MM-dd HH:mm:ss"): String {
+    return this.toLong().timestampToStr(formatStr)
 }
 
 

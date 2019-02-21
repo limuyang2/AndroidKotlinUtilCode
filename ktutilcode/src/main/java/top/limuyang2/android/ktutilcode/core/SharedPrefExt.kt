@@ -3,6 +3,7 @@ package top.limuyang2.android.ktutilcode.core
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import top.limuyang2.android.ktutilcode.KtUtilCode
 
 /**
  * get SharedPreferences
@@ -12,6 +13,9 @@ import android.content.SharedPreferences
  */
 fun Context.getSP(spName: String = "shared_preferences", mode: Int = Context.MODE_PRIVATE): SharedPreferences =
         getSharedPreferences(spName, mode)
+
+fun getSP(spName: String = "shared_preferences", mode: Int = Context.MODE_PRIVATE): SharedPreferences =
+        KtUtilCode.app.applicationContext.getSP(spName, mode)
 
 @SuppressLint("ApplySharedPref")
 inline fun SharedPreferences.edit(
@@ -27,6 +31,6 @@ inline fun SharedPreferences.edit(
     }
 }
 
-inline fun SharedPreferences.read(action: SharedPreferences.() -> Unit){
+inline fun SharedPreferences.read(action: SharedPreferences.() -> Unit) {
     action(this)
 }

@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.EditText
 import com.alibaba.fastjson.JSON
 import com.google.gson.Gson
+import org.jetbrains.anko.dip
 import top.limuyang2.android.ktutilcode.core.*
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -70,7 +71,8 @@ class MainActivity : AppCompatActivity() {
             add("34")
             add("55")
         }.logV()
-logD(e)
+
+        dip(2)
 
 //        getSP().apply {
 //            c = getBoolean("test", false)
