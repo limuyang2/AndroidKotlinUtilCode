@@ -173,8 +173,12 @@ fun FragmentManager.switch(showFragment: Fragment,
     ft.commit()
 }
 
-fun FragmentManager.getTop(): Fragment {
-    return getFmFragments()[fragments.size - 1]
+fun FragmentManager.getTop(): Fragment? {
+    val frgs = getFmFragments()
+    if (frgs.isEmpty()) {
+        return null
+    }
+    return frgs[frgs.size - 1]
 }
 
 /**
