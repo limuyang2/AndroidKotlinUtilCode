@@ -2,6 +2,7 @@
 
 package top.limuyang2.android.ktutilcode.core
 
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.support.annotation.IdRes
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -63,14 +64,20 @@ fun FragmentManager.add(addList: List<Fragment>,
     ft.commit()
 }
 
+/**
+ * 隐藏fragment
+ * @receiver FragmentManager
+ * @param hideFragment Array<out Fragment> 需要隐藏的fragment
+ */
 fun FragmentManager.hide(vararg hideFragment: Fragment) {
-    val ft = this.beginTransaction()
-    for (fragment in hideFragment) {
-        ft.hide(fragment)
-    }
-    ft.commit()
+    hide(hideFragment.toList())
 }
 
+/**
+ * 隐藏fragment
+ * @receiver FragmentManager
+ * @param hideFragment List<Fragment>
+ */
 fun FragmentManager.hide(hideFragment: List<Fragment>) {
     val ft = this.beginTransaction()
     for (fragment in hideFragment) {
@@ -79,20 +86,22 @@ fun FragmentManager.hide(hideFragment: List<Fragment>) {
     ft.commit()
 }
 
-fun Fragment.hide() {
-    this.fragmentManager?.hide(this)
-}
-
+/**
+ * 显示fragment
+ * @receiver FragmentManager
+ * @param showFragment Fragment
+ */
 fun FragmentManager.show(showFragment: Fragment) {
     val ft = this.beginTransaction()
     ft.show(showFragment)
     ft.commit()
 }
 
-fun Fragment.show() {
-    this.fragmentManager?.show(this)
-}
-
+/**
+ * 移除fragment
+ * @receiver FragmentManager
+ * @param removeFragment Array<out Fragment>
+ */
 fun FragmentManager.remove(vararg removeFragment: Fragment) {
     val ft = this.beginTransaction()
     for (fragment in removeFragment) {
@@ -101,10 +110,12 @@ fun FragmentManager.remove(vararg removeFragment: Fragment) {
     ft.commit()
 }
 
-fun Fragment.remove() {
-    this.fragmentManager?.remove(this)
-}
-
+/**
+ * 移除到指定 fragment
+ * @receiver FragmentManager
+ * @param removeTo Fragment 指定的fragment
+ * @param isIncludeSelf Boolean 移除列表中，是否包含指定的fragment自己本身
+ */
 fun FragmentManager.removeTo(removeTo: Fragment, isIncludeSelf: Boolean = false) {
     val ft = this.beginTransaction()
     val fragments = this.getFmFragments()
@@ -119,6 +130,28 @@ fun FragmentManager.removeTo(removeTo: Fragment, isIncludeSelf: Boolean = false)
     ft.commit()
 }
 
+/**
+ * 移除全部fragment
+ * @receiver FragmentManager
+ */
+fun FragmentManager.removeAll() {
+    val frg = getFmFragments()
+    if (frg.isEmpty()) return
+
+    val ft = this.beginTransaction()
+    for (fragment in frg) {
+        ft.remove(fragment)
+    }
+    ft.commit()
+}
+
+/**
+ * 现显示，再隐藏
+ * @receiver FragmentManager
+ * @param showFragment Fragment
+ * @param hideFragment Array<out Fragment>
+ * @param transaction Int 变换动画
+ */
 fun FragmentManager.showHide(
         showFragment: Fragment,
         vararg hideFragment: Fragment,
@@ -135,11 +168,14 @@ fun FragmentManager.showHide(
     ft.commit()
 }
 
-fun Fragment.showHide(vararg hideFragment: Fragment,
-                      transaction: Int = FragmentTransaction.TRANSIT_NONE) {
-    this.fragmentManager?.showHide(this, *hideFragment, transaction = transaction)
-}
-
+/**
+ * 替换 fragment
+ * @receiver FragmentManager
+ * @param fragment Fragment 需要显示的fragment
+ * @param containerId Int 容器控件id
+ * @param isAddStack Boolean 是否添加到回退栈
+ * @param tag String
+ */
 fun FragmentManager.replace(fragment: Fragment,
                             @IdRes containerId: Int,
                             isAddStack: Boolean = false,
@@ -152,6 +188,15 @@ fun FragmentManager.replace(fragment: Fragment,
     ft.commit()
 }
 
+/**
+ * 切换 fragment
+ * 显示指定的fragment，隐藏其他fragment。（如果需要显示的fragment未被添加过，则会先添加）
+ * 适用场景：例如 主页多个fragment的切换
+ * @receiver FragmentManager
+ * @param showFragment Fragment 需要显示的fragment
+ * @param containerId Int 容器控件id
+ * @param transaction Int 变换动画
+ */
 fun FragmentManager.switch(showFragment: Fragment,
                            @IdRes containerId: Int,
                            transaction: Int = FragmentTransaction.TRANSIT_NONE) {
@@ -174,18 +219,14 @@ fun FragmentManager.switch(showFragment: Fragment,
 }
 
 fun FragmentManager.getTop(): Fragment? {
-    val frgs = getFmFragments()
-    if (frgs.isEmpty()) {
-        return null
-    }
-    return frgs[frgs.size - 1]
+    val frg = getFmFragments()
+    return frg.ifEmpty { return null }[frg.size - 1]
 }
 
-/**
- * Return the fragments in manager.
- *
- * @return the fragments in manager
- */
 fun FragmentManager.getFmFragments(): List<Fragment> {
     return this.fragments ?: emptyList()
+}
+
+inline fun <reified T : Fragment> FragmentManager.findFragment(): Fragment? {
+    return this.findFragmentByTag(T::class.java.name)
 }
