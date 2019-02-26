@@ -63,6 +63,31 @@ fun Activity.toggleSoftInput() {
     imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
 }
 
+/**
+ * Fix the leaks of soft input.
+ *
+ * Call the function in [Activity.onDestroy].
+ *
+ */
+fun Activity.fixSoftInputLeaks() {
+    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            ?: return
+    val leakViews = arrayOf("mLastSrvView", "mCurRootView", "mServedView", "mNextServedView")
+    for (leakView in leakViews) {
+        try {
+            val leakViewField = InputMethodManager::class.java.getDeclaredField(leakView)
+                    ?: continue
+            if (!leakViewField.isAccessible) {
+                leakViewField.isAccessible = true
+            }
+            val obj = leakViewField.get(imm) as? View ?: continue
+            if (obj.rootView === this.window.decorView.rootView) {
+                leakViewField.set(imm, null)
+            }
+        } catch (ignore: Throwable) { /**/
+        }
+    }
+}
 
 ///////////////////////////////////////////
 //      键盘弹出监听 相关(实验性质)

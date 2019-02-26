@@ -1,5 +1,8 @@
 package top.limuyang2.android.ktutilcode.widget
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 
@@ -173,4 +176,22 @@ fun View.click(time: Long = 500, block: (View) -> Unit) {
  */
 fun View.longClick(block: (view: View) -> Boolean) {
     setOnLongClickListener(block)
+}
+
+/**
+ * view 转 Bitmap
+ * @receiver View
+ * @return Bitmap
+ */
+fun View.toBitmap(): Bitmap {
+    val ret = Bitmap.createBitmap(this.width, this.height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(ret)
+    val bgDrawable = this.background
+    if (bgDrawable != null) {
+        bgDrawable.draw(canvas)
+    } else {
+        canvas.drawColor(Color.WHITE)
+    }
+    this.draw(canvas)
+    return ret
 }
