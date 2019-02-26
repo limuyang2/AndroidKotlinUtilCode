@@ -8,7 +8,7 @@ import android.widget.EditText
 inline fun EditText.onTextChange(
         textWatcher: TextWatcherDsl.() -> Unit
 ) {
-    addTextChangedListener(top.limuyang2.android.ktutilcode.widget.TextWatcherDsl().apply(textWatcher))
+    addTextChangedListener(TextWatcherDsl().apply(textWatcher))
 }
 
 class TextWatcherDsl : TextWatcher {
