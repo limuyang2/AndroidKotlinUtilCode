@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSON
 import com.google.gson.Gson
 import org.jetbrains.anko.dip
 import top.limuyang2.android.ktutilcode.core.*
+import top.limuyang2.android.ktutilcode.widget.onTextChange
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 

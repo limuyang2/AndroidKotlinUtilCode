@@ -152,7 +152,7 @@ fun File?.deleteAllInDir(extFileFilter: ExtFileFilter? = null): Boolean {
  * @receiver File?
  * @param toFile 目标文件
  * @param isMove Boolean
- * @param replaceExtFileFilter 文件过滤器。当目标文件存在时，是否进行替换，'true'替换; 'false' 不替换
+ * @param replaceExtFileFilter 文件过滤器。当目标文件存在时，是否进行替换，'true'替换; 'false' 不替换。（默认进行替换）
  * @return Boolean
  */
 private fun File?.copyOrMoveFile(

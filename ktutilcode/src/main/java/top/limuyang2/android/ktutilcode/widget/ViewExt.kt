@@ -1,10 +1,37 @@
-package top.limuyang2.android.ktutilcode.core
+package top.limuyang2.android.ktutilcode.widget
 
 import android.view.View
 import android.view.ViewGroup
 
 //View 扩展
+fun View.setHeight(value: Int) {
+    val lp = layoutParams
+    lp?.let {
+        lp.height = value
+        layoutParams = lp
+    }
+}
 
+fun View.setWidth(value: Int) {
+    val lp = layoutParams
+    lp?.let {
+        lp.width = value
+        layoutParams = lp
+    }
+}
+
+fun View.resize(width: Int, height: Int) {
+    val lp = layoutParams
+    lp?.let {
+        lp.width = width
+        lp.height = height
+        layoutParams = lp
+    }
+}
+
+//////////////////////////////////////////////////
+//                visibility                    //
+//////////////////////////////////////////////////
 inline var View.visible: Boolean
     get() = visibility == View.VISIBLE
     set(value) {

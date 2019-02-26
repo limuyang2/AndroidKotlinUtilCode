@@ -35,7 +35,7 @@ import javax.xml.transform.stream.StreamSource
  * @Description: 日志相关
  */
 
-typealias IFormatter = (t: Any) -> String
+private typealias IFormatter = (t: Any) -> String
 
 enum class LogType {
     V {

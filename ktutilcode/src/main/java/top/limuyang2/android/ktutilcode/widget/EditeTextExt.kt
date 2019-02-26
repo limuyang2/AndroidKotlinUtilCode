@@ -1,4 +1,4 @@
-package top.limuyang2.android.ktutilcode.core
+package top.limuyang2.android.ktutilcode.widget
 
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,7 +8,7 @@ import android.widget.EditText
 inline fun EditText.onTextChange(
         textWatcher: TextWatcherDsl.() -> Unit
 ) {
-    addTextChangedListener(TextWatcherDsl().apply(textWatcher))
+    addTextChangedListener(top.limuyang2.android.ktutilcode.widget.TextWatcherDsl().apply(textWatcher))
 }
 
 class TextWatcherDsl : TextWatcher {
@@ -40,3 +40,4 @@ class TextWatcherDsl : TextWatcher {
         _onTextChanged = onChanged
     }
 }
+
