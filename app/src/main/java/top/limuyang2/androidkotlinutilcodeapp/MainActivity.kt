@@ -1,10 +1,12 @@
 package top.limuyang2.androidkotlinutilcodeapp
 
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.EditText
 import com.alibaba.fastjson.JSON
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.dip
 import top.limuyang2.android.ktutilcode.core.*
 import top.limuyang2.android.ktutilcode.widget.onTextChange
@@ -75,6 +77,8 @@ class MainActivity : AppCompatActivity() {
 
         dip(2)
 
+
+        tv.text = "test".setBackgroundColor(Color.LTGRAY).setForegroundColor(Color.RED)
 //        getSP().apply {
 //            c = getBoolean("test", false)
 //        }
