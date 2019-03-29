@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 
 //View 扩展
-fun View.setHeight(value: Int) {
+fun View.setNewHeight(value: Int) {
     val lp = layoutParams
     lp?.let {
         lp.height = value
@@ -15,7 +15,7 @@ fun View.setHeight(value: Int) {
     }
 }
 
-fun View.setWidth(value: Int) {
+fun View.setNewWidth(value: Int) {
     val lp = layoutParams
     lp?.let {
         lp.width = value

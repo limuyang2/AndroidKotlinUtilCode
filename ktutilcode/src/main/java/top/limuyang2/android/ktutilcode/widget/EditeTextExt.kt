@@ -7,8 +7,10 @@ import android.widget.EditText
 
 inline fun EditText.onTextChange(
         textWatcher: TextWatcherDsl.() -> Unit
-) {
-    addTextChangedListener(TextWatcherDsl().apply(textWatcher))
+): TextWatcher {
+    val v = TextWatcherDsl().apply(textWatcher)
+    addTextChangedListener(v)
+    return v
 }
 
 class TextWatcherDsl : TextWatcher {
