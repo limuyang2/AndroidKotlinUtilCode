@@ -58,6 +58,16 @@ object ActivityManageUtil {
     }
 
     /**
+     * 判断栈中是否只有它自己
+     * @param selfActivity Activity
+     * @return Boolean
+     */
+    fun isOnlyHasSelfInStack(selfActivity: Activity) :Boolean{
+        val activities = ACTIVITY_LIFECYCLE.mActivityList
+        return activities.size == 1 && activities.contains(selfActivity)
+    }
+
+    /**
      * 判断 Activity 是否存在栈中
      * @param activity Activity
      * @return Boolean
