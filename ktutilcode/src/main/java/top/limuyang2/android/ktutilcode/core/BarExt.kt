@@ -6,15 +6,13 @@ import android.content.ContextWrapper
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Build
-import android.support.annotation.ColorInt
-import android.support.annotation.NonNull
-import android.support.annotation.RequiresApi
 import android.util.Log
 import android.util.TypedValue
 import android.view.*
+import androidx.annotation.ColorInt
+import androidx.annotation.NonNull
+import androidx.annotation.RequiresApi
 import top.limuyang2.android.ktutilcode.KtUtilCode
-
-
 
 
 private const val TAG_STATUS_BAR = "TAG_STATUS_BAR"
@@ -79,24 +77,20 @@ inline var Activity.statusBarLightMode: Boolean
 inline var Window.statusBarLightMode: Boolean
     set(value) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (decorView != null) {
-                var vis = decorView.systemUiVisibility
-                vis = if (value) {
-                    this.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                    vis or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                } else {
-                    vis and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-                }
-                decorView.systemUiVisibility = vis
+            var vis = decorView.systemUiVisibility
+            vis = if (value) {
+                this.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                vis or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            } else {
+                vis and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
             }
+            decorView.systemUiVisibility = vis
         }
     }
     get() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (decorView != null) {
-                val vis = decorView.systemUiVisibility
-                return vis == vis or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            }
+            val vis = decorView.systemUiVisibility
+            return vis == vis or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
         return false
     }

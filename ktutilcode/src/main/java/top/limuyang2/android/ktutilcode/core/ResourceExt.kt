@@ -3,7 +3,7 @@ package top.limuyang2.android.ktutilcode.core
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.support.annotation.ColorInt
+import androidx.annotation.ColorInt
 import top.limuyang2.android.ktutilcode.KtUtilCode
 
 @Suppress("DEPRECATION")

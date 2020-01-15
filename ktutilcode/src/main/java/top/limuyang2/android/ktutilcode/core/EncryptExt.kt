@@ -1,6 +1,6 @@
 package top.limuyang2.android.ktutilcode.core
 
-import android.support.annotation.Size
+import androidx.annotation.Size
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException

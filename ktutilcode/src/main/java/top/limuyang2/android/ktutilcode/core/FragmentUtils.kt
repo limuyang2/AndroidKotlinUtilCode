@@ -1,12 +1,10 @@
-@file:Suppress("unused")
-
 package top.limuyang2.android.ktutilcode.core
 
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.support.annotation.IdRes
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentTransaction
+import androidx.annotation.IdRes
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 
 /**
  * @author: limuyang
@@ -118,7 +116,7 @@ fun FragmentManager.remove(vararg removeFragment: Fragment) {
  */
 fun FragmentManager.removeTo(removeTo: Fragment, isIncludeSelf: Boolean = false) {
     val ft = this.beginTransaction()
-    val fragments = this.getFmFragments()
+    val fragments = this.fragments
     for (i in (fragments.size - 1)..0) {
         val fragment = fragments[i]
         if (fragment == removeTo && isIncludeSelf) {
@@ -135,7 +133,7 @@ fun FragmentManager.removeTo(removeTo: Fragment, isIncludeSelf: Boolean = false)
  * @receiver FragmentManager
  */
 fun FragmentManager.removeAll() {
-    val frg = getFmFragments()
+    val frg = fragments
     if (frg.isEmpty()) return
 
     val ft = this.beginTransaction()
@@ -202,7 +200,7 @@ fun FragmentManager.switch(showFragment: Fragment,
                            transaction: Int = FragmentTransaction.TRANSIT_NONE) {
     val ft = this.beginTransaction().setTransition(transaction)
 
-    val tag = showFragment::class.java.name
+    val tag = showFragment::class.java.name + showFragment.hashCode()
     val fragmentByTag = this.findFragmentByTag(tag)
     if (fragmentByTag != null && fragmentByTag.isAdded) {
         ft.show(fragmentByTag)
@@ -210,7 +208,7 @@ fun FragmentManager.switch(showFragment: Fragment,
         ft.add(containerId, showFragment, tag)
     }
 
-    for (tempF in this.getFmFragments()) {
+    for (tempF in this.fragments) {
         if (tempF != fragmentByTag) {
             ft.hide(tempF)
         }
@@ -219,13 +217,10 @@ fun FragmentManager.switch(showFragment: Fragment,
 }
 
 fun FragmentManager.getTop(): Fragment? {
-    val frg = getFmFragments()
+    val frg = this.fragments
     return frg.ifEmpty { return null }[frg.size - 1]
 }
 
-fun FragmentManager.getFmFragments(): List<Fragment> {
-    return this.fragments ?: emptyList()
-}
 
 inline fun <reified T : Fragment> FragmentManager.findFragment(): Fragment? {
     return this.findFragmentByTag(T::class.java.name)

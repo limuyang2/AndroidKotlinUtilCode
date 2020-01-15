@@ -10,10 +10,25 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.Build
 import android.provider.Settings
-import android.support.annotation.RequiresPermission
 import android.util.DisplayMetrics
 import android.view.WindowManager
+import androidx.annotation.DimenRes
+import androidx.annotation.RequiresPermission
 
+
+//returns dip(dp) dimension value in pixels
+fun Context.dip(value: Int): Int = (value * resources.displayMetrics.density).toInt()
+fun Context.dip(value: Float): Int = (value * resources.displayMetrics.density).toInt()
+
+//return sp dimension value in pixels
+fun Context.sp(value: Int): Int = (value * resources.displayMetrics.scaledDensity).toInt()
+fun Context.sp(value: Float): Int = (value * resources.displayMetrics.scaledDensity).toInt()
+
+//converts px value into dip or sp
+fun Context.px2dip(px: Int): Float = px.toFloat() / resources.displayMetrics.density
+fun Context.px2sp(px: Int): Float = px.toFloat() / resources.displayMetrics.scaledDensity
+
+fun Context.dimen(@DimenRes resource: Int): Int = resources.getDimensionPixelSize(resource)
 
 /**
  * 获取屏幕宽度
@@ -104,7 +119,7 @@ inline val Context.isScreenLock: Boolean
     get() {
         val km = this.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         //noinspection ConstantConditions
-        return km.inKeyguardRestrictedInputMode()
+        return km.isKeyguardLocked
     }
 
 /**

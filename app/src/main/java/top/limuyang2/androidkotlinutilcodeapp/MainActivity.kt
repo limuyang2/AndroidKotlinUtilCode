@@ -2,12 +2,10 @@ package top.limuyang2.androidkotlinutilcodeapp
 
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.widget.EditText
-import com.alibaba.fastjson.JSON
+import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.dip
 import top.limuyang2.android.ktutilcode.core.*
 import top.limuyang2.android.ktutilcode.widget.onTextChange
 import java.lang.reflect.ParameterizedType
@@ -107,37 +105,8 @@ class MainActivity : AppCompatActivity() {
 ////        val objectType = type(BeanBean::class.java, clazz)
 ////        val common = Gson().fromJson(result, Data::class.java)
 //
-//        val a = fJson<BaseBean<String>>(result)
-//        val c = fJson<Array<Data>>(a.data.toString())
-////        val c = a.data as ArrayList<Data>
-//        println("--------> ${c.size}")
-////        println("--------> ${c.get(0).locationId}")
-//
-//        val group = fJson2<BaseBean<String>>(result)
-//        println("-------->fast ${group.data!!}")
+
     }
 
-    inline fun <reified T> fJson(jsonStr: String): T {
-        return Gson().fromJson(jsonStr, T::class.java)
-    }
 
-    inline fun <reified T> fJson2(jsonStr: String): T {
-        return JSON.parseObject(jsonStr, T::class.java)
-    }
-
-    fun type(raw: Class<*>, vararg args: Type): ParameterizedType {
-        return object : ParameterizedType {
-            override fun getRawType(): Type = raw
-            override fun getOwnerType(): Type? = null
-
-            override fun getActualTypeArguments(): Array<Type> {
-                val a = emptyArray<Type>()
-                for (n in 0 until args.size) {
-                    a[n] = args[n]
-                }
-                return a
-            }
-
-        }
-    }
 }

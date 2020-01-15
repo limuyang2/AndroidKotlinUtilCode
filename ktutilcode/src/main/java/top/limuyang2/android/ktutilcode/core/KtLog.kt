@@ -7,10 +7,9 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.support.annotation.IntRange
-import android.support.annotation.RequiresApi
-import android.support.v4.util.SimpleArrayMap
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.collection.SimpleArrayMap
 import com.google.gson.GsonBuilder
 import org.json.JSONArray
 import org.json.JSONException
@@ -117,10 +116,10 @@ class LogConfig {
     // The storage directory of log.
     var dir: String? = null
         set(value) {
-            if (value.isNullOrBlank()) {
-                field = null
+            field = if (value.isNullOrBlank()) {
+                null
             } else {
-                field = if (value.endsWith(FILE_SEP)) value else value + FILE_SEP
+                if (value.endsWith(FILE_SEP)) value else value + FILE_SEP
             }
         }
         get() = if (field == null) defaultDir else field
@@ -157,9 +156,9 @@ class LogConfig {
     var singleTagSwitch = true  // The single tag of log.
     var consoleFilter = LogType.V     // The console's filter of log.
     var fileFilter = LogType.V     // The file's filter of log.
-    @IntRange(from = 1)
+    @androidx.annotation.IntRange(from = 1)
     var stackDeep = 1     // The stack's deep of log.
-    @IntRange(from = 0)
+    @androidx.annotation.IntRange(from = 0)
     var stackOffset = 0     // The stack's offset of log.
     var saveDays = -1    // The save days of log.
 
@@ -450,15 +449,15 @@ private object LogFormatter {
 
     private fun array2String(`object`: Any): String {
         return when (`object`) {
-            is Array<*> -> Arrays.deepToString(`object`)
-            is BooleanArray -> Arrays.toString(`object`)
-            is ByteArray -> Arrays.toString(`object`)
-            is CharArray -> Arrays.toString(`object`)
-            is DoubleArray -> Arrays.toString(`object`)
-            is FloatArray -> Arrays.toString(`object`)
-            is IntArray -> Arrays.toString(`object`)
-            is LongArray -> Arrays.toString(`object`)
-            is ShortArray -> Arrays.toString(`object`)
+            is Array<*> -> `object`.contentDeepToString()
+            is BooleanArray -> `object`.contentToString()
+            is ByteArray -> `object`.contentToString()
+            is CharArray -> `object`.contentToString()
+            is DoubleArray -> `object`.contentToString()
+            is FloatArray -> `object`.contentToString()
+            is IntArray -> `object`.contentToString()
+            is LongArray -> `object`.contentToString()
+            is ShortArray -> `object`.contentToString()
             else -> throw IllegalArgumentException("Array has incompatible type: " + `object`.javaClass)
         }
     }
@@ -514,10 +513,7 @@ private fun processTagAndHead(mTag: String): TagHead {
             if (config.stackDeep <= 1) {
                 return TagHead(tag, arrayOf(head), fileHead)
             } else {
-                val consoleHead = arrayOfNulls<String>(Math.min(
-                        config.stackDeep,
-                        stackTrace.size - stackIndex
-                ))
+                val consoleHead = arrayOfNulls<String>(config.stackDeep.coerceAtMost(stackTrace.size - stackIndex))
 
                 consoleHead[0] = head
                 val spaceLen = tName.length + 2
@@ -799,14 +795,18 @@ private fun deleteDueLogs(filePath: String) {
 
 private fun printDeviceInfo(filePath: String) {
     var versionName = ""
-    var versionCode = 0
+    var versionCode = 0L
     try {
         val pi = KtUtilCode.app
                 .packageManager
                 .getPackageInfo(KtUtilCode.app.packageName, 0)
         if (pi != null) {
             versionName = pi.versionName
-            versionCode = pi.versionCode
+            versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                pi.longVersionCode
+            } else {
+                pi.versionCode.toLong()
+            }
         }
     } catch (e: PackageManager.NameNotFoundException) {
         e.printStackTrace()

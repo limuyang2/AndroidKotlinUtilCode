@@ -2,11 +2,11 @@ package top.limuyang2.android.ktutilcode.core
 
 import android.app.Activity
 import android.graphics.drawable.ColorDrawable
-import android.support.annotation.ColorInt
-import android.support.annotation.IdRes
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
-import android.support.v4.app.FragmentTransaction
+import androidx.annotation.ColorInt
+import androidx.annotation.IdRes
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentTransaction
 
 /**
  * @author: limuyang
