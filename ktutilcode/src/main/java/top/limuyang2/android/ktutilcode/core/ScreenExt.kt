@@ -6,26 +6,31 @@ import android.app.KeyguardManager
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.Point
+import android.graphics.*
 import android.os.Build
+import android.os.Handler
 import android.provider.Settings
 import android.util.DisplayMetrics
+import android.view.PixelCopy
 import android.view.WindowManager
 import androidx.annotation.DimenRes
+import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 
 
 //returns dip(dp) dimension value in pixels
 fun Context.dip(value: Int): Int = (value * resources.displayMetrics.density).toInt()
+
 fun Context.dip(value: Float): Int = (value * resources.displayMetrics.density).toInt()
 
 //return sp dimension value in pixels
 fun Context.sp(value: Int): Int = (value * resources.displayMetrics.scaledDensity).toInt()
+
 fun Context.sp(value: Float): Int = (value * resources.displayMetrics.scaledDensity).toInt()
 
 //converts px value into dip or sp
 fun Context.px2dip(px: Int): Float = px.toFloat() / resources.displayMetrics.density
+
 fun Context.px2sp(px: Int): Float = px.toFloat() / resources.displayMetrics.scaledDensity
 
 fun Context.dimen(@DimenRes resource: Int): Int = resources.getDimensionPixelSize(resource)
@@ -147,7 +152,6 @@ inline var Context.sleepDuration: Int
     }
 
 
-
 /**
  * 截屏
  *
@@ -155,15 +159,17 @@ inline var Context.sleepDuration: Int
  * @return the bitmap of screen
  */
 fun Activity.screenShot(isDeleteStatusBar: Boolean = false): Bitmap? {
-    val decorView = window.decorView
-    decorView.isDrawingCacheEnabled = true
-    decorView.setWillNotCacheDrawing(false)
-    val bmp = decorView.drawingCache ?: return null
     val dm = DisplayMetrics()
     windowManager.defaultDisplay.getMetrics(dm)
-    val ret = if (isDeleteStatusBar) {
-        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
-        val statusBarHeight = resources.getDimensionPixelSize(resourceId)
+
+    val bmp = Bitmap.createBitmap(dm.widthPixels, dm.heightPixels, Bitmap.Config.RGB_565)
+    val canvas = Canvas(bmp)
+//    canvas.drawColor(Color.WHITE)
+    window.decorView.draw(canvas)
+
+
+    return if (isDeleteStatusBar) {
+        val statusBarHeight = statusBarHeight
         Bitmap.createBitmap(
                 bmp,
                 0,
@@ -174,6 +180,22 @@ fun Activity.screenShot(isDeleteStatusBar: Boolean = false): Bitmap? {
     } else {
         Bitmap.createBitmap(bmp, 0, 0, dm.widthPixels, dm.heightPixels)
     }
-    decorView.destroyDrawingCache()
-    return ret
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun Activity.screenShot(isDeleteStatusBar: Boolean = false, listener: (Int, Bitmap) -> Unit) {
+
+    val rect = Rect()
+    windowManager.defaultDisplay.getRectSize(rect)
+
+    if (isDeleteStatusBar) {
+        val statusBarHeight = this.statusBarHeight
+
+        rect.set(rect.left, rect.top + statusBarHeight, rect.right, rect.bottom)
+    }
+    val bitmap = Bitmap.createBitmap(rect.width(), rect.height(), Bitmap.Config.ARGB_8888)
+
+    PixelCopy.request(this.window, rect, bitmap, {
+        listener(it, bitmap)
+    }, Handler(this.mainLooper))
 }

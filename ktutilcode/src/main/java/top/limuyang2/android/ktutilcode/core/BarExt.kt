@@ -24,12 +24,11 @@ private const val KEY_OFFSET = -123
  */
 inline val Context.statusBarHeight: Int
     get() {
-        var result = 0
         val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
         if (resourceId > 0) {
-            result = resources.getDimensionPixelSize(resourceId)
+            return resources.getDimensionPixelSize(resourceId)
         }
-        return result
+        return 0
     }
 
 /**

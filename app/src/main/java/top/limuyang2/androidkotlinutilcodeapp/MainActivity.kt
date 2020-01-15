@@ -1,8 +1,12 @@
 package top.limuyang2.androidkotlinutilcodeapp
 
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.view.PixelCopy
 import android.widget.EditText
+import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
@@ -77,6 +81,22 @@ class MainActivity : AppCompatActivity() {
 
 
         tv.text = "test".setBackgroundColor(Color.LTGRAY).setForegroundColor(Color.RED)
+
+        tv.setOnClickListener {
+            val imageView = ImageView(this)
+            imageView.setImageBitmap(screenShot(true))
+            AlertDialog.Builder(this).setView(imageView).show()
+
+
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                screenShot(false) { _, bitmap ->
+//                    val imageView = ImageView(this)
+//                    imageView.setImageBitmap(bitmap)
+//                    AlertDialog.Builder(this).setView(imageView).show()
+//                }
+//            }
+        }
+
 //        getSP().apply {
 //            c = getBoolean("test", false)
 //        }
