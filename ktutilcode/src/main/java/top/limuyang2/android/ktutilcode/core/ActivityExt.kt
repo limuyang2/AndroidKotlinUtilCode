@@ -25,7 +25,7 @@ fun FragmentActivity.addFragment(addFragment: Fragment,
                                  @IdRes containerId: Int,
                                  isHide: Boolean = false,
                                  isAddStack: Boolean = false,
-                                 tag: String = addFragment::class.java.name) {
+                                 tag: String = addFragment::class.java.name + addFragment.hashCode()) {
     supportFragmentManager.add(addFragment, containerId, isHide, isAddStack, tag)
 }
 
@@ -38,7 +38,7 @@ fun FragmentActivity.addFragment(addList: List<Fragment>,
 fun FragmentActivity.replaceFragment(fragment: Fragment,
                                      @IdRes containerId: Int,
                                      isAddStack: Boolean = false,
-                                     tag: String = fragment::class.java.name) {
+                                     tag: String = fragment::class.java.name + fragment.hashCode()) {
     supportFragmentManager.replace(fragment, containerId, isAddStack, tag)
 }
 

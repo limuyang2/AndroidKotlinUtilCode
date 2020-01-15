@@ -48,7 +48,7 @@ fun FragmentManager.add(addList: List<Fragment>,
                         @IdRes containerId: Int,
                         showIndex: Int = 0) {
     val ft = this.beginTransaction()
-    for (i in 0 until addList.size) {
+    for (i in addList.indices) {
         val addFragment = addList[i]
         val tag = addFragment::class.java.name
         val fragmentByTag = this.findFragmentByTag(tag)
@@ -177,7 +177,7 @@ fun FragmentManager.showHide(
 fun FragmentManager.replace(fragment: Fragment,
                             @IdRes containerId: Int,
                             isAddStack: Boolean = false,
-                            tag: String = fragment::class.java.name) {
+                            tag: String = fragment::class.java.name + fragment.hashCode()) {
     val ft = this.beginTransaction()
 
     ft.replace(containerId, fragment, tag)
