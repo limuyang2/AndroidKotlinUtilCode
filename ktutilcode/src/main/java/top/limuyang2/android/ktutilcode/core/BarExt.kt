@@ -134,28 +134,62 @@ fun View.subtractMarginTopEqualStatusBarHeight() {
  * @param isDecor  True to add fake status bar in DecorView,
  * false to add fake status bar in ContentView.
  */
-fun Activity.setStatusBarColor(@ColorInt color: Int,
-                               isDecor: Boolean = true) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return
-    transparentStatusBar()
-
-//    if (isDecor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//        window.statusBarColor = getStatusBarColor(color, alpha)
-//        return
+//fun Activity.setStatusBarColor(@ColorInt color: Int,
+//                               isDecor: Boolean = true) {
+//    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return
+//    transparentStatusBar()
+//
+////    if (isDecor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+////        window.statusBarColor = getStatusBarColor(color, alpha)
+////        return
+////    }
+//
+//    val parent = if (isDecor)
+//        window.decorView as ViewGroup
+//    else
+//        findViewById<View>(android.R.id.content) as ViewGroup
+//    val fakeStatusBarView = parent.findViewWithTag<View>(TAG_STATUS_BAR)
+//    if (fakeStatusBarView != null) {
+//        if (fakeStatusBarView.visibility == View.GONE) {
+//            fakeStatusBarView.visibility = View.VISIBLE
+//        }
+//        fakeStatusBarView.setBackgroundColor(color)
+//    } else {
+//        parent.addView(createColorStatusBarView(this, color))
 //    }
+//}
 
-    val parent = if (isDecor)
-        window.decorView as ViewGroup
-    else
-        findViewById<View>(android.R.id.content) as ViewGroup
+fun Activity.setStatusBarColor(@ColorInt color: Int, isMarginTop: Boolean = true, isDecor: Boolean = false): View {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return View(this)
+    transparentStatusBar()
+    return addStatusBarColor(color, isMarginTop, isDecor)
+}
+
+fun Activity.setStatusBarColorWhitNoTransparent(@ColorInt color: Int, isMarginTop: Boolean = true, isDecor: Boolean = false): View {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return View(this)
+    return addStatusBarColor(color, isMarginTop, isDecor)
+}
+
+private fun Activity.addStatusBarColor(@ColorInt color: Int, isMarginTop: Boolean = true, isDecor: Boolean = false): View  {
+    val parent = if (isMarginTop) {
+        (findViewById<View>(android.R.id.content) as ViewGroup).apply {
+            getChildAt(0)?.addMarginTopEqualStatusBarHeight()
+        }
+    }  else {
+        if (isDecor)
+            window.decorView as ViewGroup
+        else
+            findViewById<View>(android.R.id.content) as ViewGroup
+    }
+
     val fakeStatusBarView = parent.findViewWithTag<View>(TAG_STATUS_BAR)
-    if (fakeStatusBarView != null) {
+    return if (fakeStatusBarView != null) {
         if (fakeStatusBarView.visibility == View.GONE) {
             fakeStatusBarView.visibility = View.VISIBLE
         }
-        fakeStatusBarView.setBackgroundColor(color)
+        fakeStatusBarView.apply { setBackgroundColor(color) }
     } else {
-        parent.addView(createColorStatusBarView(this, color))
+        createColorStatusBarView(color).apply { parent.addView(this) }
     }
 }
 
@@ -199,11 +233,10 @@ fun Window.showColorView() {
     fakeStatusBarView.visibility = View.VISIBLE
 }
 
-private fun createColorStatusBarView(context: Context,
-                                     color: Int): View {
-    val statusBarView = View(context)
+private fun Context.createColorStatusBarView(color: Int): View {
+    val statusBarView = View(this)
     statusBarView.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, context.statusBarHeight)
+            ViewGroup.LayoutParams.MATCH_PARENT, this.statusBarHeight)
     statusBarView.setBackgroundColor(color)
     statusBarView.tag = TAG_STATUS_BAR
     return statusBarView

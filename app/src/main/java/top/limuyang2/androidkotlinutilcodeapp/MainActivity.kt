@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        setStatusBarColor(resources.getColor(R.color.colorPrimary), true)
+        setStatusBarColor(resources.getColor(R.color.colorAccent), true)
 
         getSP().edit {
             putBoolean("test", true)

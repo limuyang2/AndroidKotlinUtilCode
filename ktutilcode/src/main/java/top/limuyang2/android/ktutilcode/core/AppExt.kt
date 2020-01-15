@@ -14,8 +14,6 @@ import androidx.core.content.FileProvider
 import java.io.File
 
 
-
-
 /**
  * Return the application's icon.
  *
